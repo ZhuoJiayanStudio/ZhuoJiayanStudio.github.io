@@ -22,6 +22,7 @@
         }
 
         .container {
+            position: relative;
             background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -38,9 +39,10 @@
         }
 
         .lang-switch {
-            position: absolute;
+            position: fixed;
             top: 20px;
-            right: 20px;
+            right: max(20px, calc(50% - 350px));
+            z-index: 1000;
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px) saturate(150%);
             -webkit-backdrop-filter: blur(10px) saturate(150%);
@@ -148,10 +150,11 @@
     </style>
 </head>
 <body>
+    <div class="lang-switch">
+        <a href="index.html">中文</a> | <a href="index-yue.html">粵語</a> | <strong>English</strong>
+    </div>
+
     <div class="container">
-        <div class="lang-switch">
-            <a href="index.html">中文</a> | <a href="index-yue.html">粵語</a> | <strong>English</strong>
-        </div>
 
         <h1>📚 Zhuo Jiayan's Library</h1>
         <p class="subtitle">This library aims to save some open-source programming books<br>(You know, "save" means "keep", not "rescue"...)</p>
@@ -163,29 +166,26 @@
                     Author: Magi Su | Year: 2006 | License: GNU/GPL | <span style="color: rgba(255,255,255,0.6);">Chinese Only 🇨🇳</span>
                 </div>
                 <div class="book-meta" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">
-                    English alternative: <a href="https://linuxcommand.org/tlcl.php" style="color: #fff; font-weight: 600;">The Linux Command Line</a> by William Shotts — CC BY-NC-ND 3.0
+                    English alternative: <a href="https://linuxcommand.org/tlcl.php">The Linux Command Line</a> by William Shotts — CC BY-NC-ND 3.0
                 </div>
             </li>
             <li class="book-item">
-                <a href="https://d2l.ai/">Dive into Deep Learning</a>
+                <a href="https://zh.d2l.ai/">Dive into Deep Learning</a>
                 <div class="book-meta">
-                    Author: Aston Zhang et al. | Year: 2023 | License: MIT-0
+                    Author: Aston Zhang et al. | Year: 2023 | License: MIT-0 | Used by 500+ universities worldwide
                 </div>
             </li>
             <li class="book-item">
                 <a href="https://www.manning.com/books/c-plus-plus-concurrency-in-action">C++ Concurrency in Action</a>
                 <div class="book-meta">
-                    Author: Anthony Williams | Year: 2019 | Publisher: Manning Publications | The definitive guide to C++ multithreading
+                    Author: Anthony Williams | Year: 2019 | License: MIT | Based on C++11/14/17 standards
                 </div>
             </li>
         </ul>
 
-
-
         <div class="footer">
-            <p>Maintainer: Zhuo Jiayan</p>
-            <p style="margin-top: 10px; font-style: italic; color: rgba(255, 255, 255, 0.7);">"Good good study, day day up!"</p>
-            <p style="margin-top: 8px; font-size: 0.8em; color: rgba(255, 255, 255, 0.7);">Server powered by GitHub Pages | Written by QClaw calling Kimi</p>
+            <p>Maintained by: Zhuo Jiayan</p>
+            <p style="margin-top: 8px; font-size: 0.8em; color: rgba(255, 255, 255, 0.7);">Hosted by GitHub Pages | Written by QClaw calling Kimi</p>
         </div>
     </div>
 </body>
