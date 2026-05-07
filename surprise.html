@@ -87,9 +87,33 @@
                 font-size: 1.6em;
             }
         }
+        .loader {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .loader i {
+            font-size: 3em;
+            color: rgba(255, 255, 255, 0.8);
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
+    <div class="loader" id="loader"><i class="fas fa-spinner"></i></div>
     <div class="container">
         <img class="nezha-img" src="https://pic4.zhimg.com/v2-22ffbcf8a90a6e58cb37942f80ae64f9_b.webp" alt="哪吒">
 
@@ -98,6 +122,10 @@
     </div>
 
     <script>
+        window.addEventListener('load', function() {
+            document.getElementById('loader').classList.add('hidden');
+        });
+
         function goToMain() {
             window.location.href = 'index.html';
         }
