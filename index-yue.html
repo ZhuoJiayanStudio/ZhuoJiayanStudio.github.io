@@ -6,6 +6,23 @@
     <title>卓嘉彥嘅圖書館</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        :root {
+            --primary-gradient-start: #667eea;
+            --primary-gradient-end: #764ba2;
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-shadow: rgba(0, 0, 0, 0.2);
+            --text-primary: #fff;
+            --text-secondary: rgba(255, 255, 255, 0.9);
+            --text-muted: rgba(255, 255, 255, 0.75);
+            --text-dim: rgba(255, 255, 255, 0.6);
+            --accent-color: #764ba2;
+            --hover-bg: rgba(255, 255, 255, 0.35);
+            --badge-bg: rgba(255, 255, 255, 0.15);
+            --success-color: rgba(76, 175, 80, 0.4);
+            --success-border: rgba(76, 175, 80, 0.5);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -14,7 +31,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-gradient-start) 0%, var(--primary-gradient-end) 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -24,19 +41,18 @@
 
         .container {
             position: relative;
-            background: rgba(255, 255, 255, 0.25);
+            background: var(--glass-bg);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid var(--glass-border);
             box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.2),
+                0 8px 32px var(--glass-shadow),
                 inset 0 1px 0 rgba(255, 255, 255, 0.4);
             padding: 50px 40px;
             max-width: 700px;
             width: 100%;
             text-align: center;
-            position: relative;
         }
 
         .lang-switch {
@@ -54,7 +70,7 @@
         }
 
         .lang-switch a {
-            color: #764ba2;
+            color: var(--accent-color);
             text-decoration: none;
             margin: 0 8px;
             font-size: 0.9em;
@@ -62,7 +78,7 @@
         }
 
         .lang-switch a:hover {
-            color: #667eea;
+            color: var(--primary-gradient-start);
             text-decoration: underline;
         }
 
@@ -73,7 +89,7 @@
         }
 
         h1 {
-            color: #fff;
+            color: var(--text-primary);
             font-size: 2.5em;
             margin-bottom: 15px;
             font-weight: 700;
@@ -81,10 +97,50 @@
         }
 
         .subtitle {
-            color: rgba(255, 255, 255, 0.9);
+            color: var(--text-secondary);
             font-size: 1.1em;
-            margin-bottom: 40px;
+            margin-bottom: 25px;
             line-height: 1.6;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 30px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: var(--text-primary);
+            font-size: 1em;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .search-box input:focus {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            font-size: 1em;
         }
 
         .book-list {
@@ -103,33 +159,116 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-left: 4px solid rgba(255, 255, 255, 0.5);
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 0.5s ease forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-item:nth-child(1) { animation-delay: 0.1s; }
+        .book-item:nth-child(2) { animation-delay: 0.2s; }
+        .book-item:nth-child(3) { animation-delay: 0.3s; }
+        .book-item:nth-child(4) { animation-delay: 0.4s; }
+        .book-item:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .book-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .book-item:hover::before {
+            left: 100%;
         }
 
         .book-item:hover {
             transform: translateX(5px);
-            background: rgba(255, 255, 255, 0.25);
+            background: var(--hover-bg);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+            border-left-color: var(--text-primary);
+        }
+
+        .book-item.hidden {
+            display: none;
+        }
+
+        .book-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .book-icon {
+            font-size: 1.3em;
+            color: var(--text-primary);
+            opacity: 0.9;
         }
 
         .book-item a {
-            color: #fff;
+            color: var(--text-primary);
             text-decoration: none;
             font-size: 1.1em;
             font-weight: 600;
-            display: block;
-            margin-bottom: 8px;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            flex: 1;
+            pointer-events: none;
         }
 
-        .book-item a:hover {
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: underline;
+        .book-arrow {
+            color: var(--text-dim);
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .book-item:hover .book-arrow {
+            color: var(--text-primary);
+            transform: translateX(3px);
         }
 
         .book-meta {
-            color: rgba(255, 255, 255, 0.75);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: var(--badge-bg);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 0.8em;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .book-item:hover .badge {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .book-item .book-meta a {
             font-size: 0.9em;
-            line-height: 1.5;
+            font-weight: 500;
+            pointer-events: auto;
         }
 
         .share-btn {
@@ -137,7 +276,7 @@
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            color: #fff;
+            color: var(--text-primary);
             text-decoration: none;
             padding: 10px 24px;
             border-radius: 20px;
@@ -156,15 +295,15 @@
         }
 
         .share-btn.copied {
-            background: rgba(76, 175, 80, 0.4);
-            border-color: rgba(76, 175, 80, 0.5);
+            background: var(--success-color);
+            border-color: var(--success-border);
         }
 
         .footer {
             margin-top: 40px;
             padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--text-muted);
             font-size: 0.85em;
         }
 
@@ -175,11 +314,29 @@
             h1 {
                 font-size: 1.8em;
             }
+            .lang-switch {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 20px;
+                display: inline-block;
+            }
+            .book-header {
+                flex-wrap: wrap;
+            }
+            .book-meta {
+                gap: 4px;
+            }
+            .badge {
+                font-size: 0.75em;
+                padding: 3px 8px;
+            }
         }
+
         .loader {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-gradient-start) 0%, var(--primary-gradient-end) 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -203,38 +360,63 @@
 </head>
 <body>
     <div class="loader" id="loader"><i class="fas fa-spinner"></i></div>
-    <div class="lang-switch">
-        <a href="index.html">中文</a> | <strong>粵語</strong> | <a href="index-en.html">English</a>
-    </div>
-
     <div class="container">
+        <div class="lang-switch">
+            <a href="index.html">中文</a> | <strong>粵語</strong> | <a href="index-en.html">English</a>
+        </div>
 
         <h1><i class="fas fa-book-open"></i> 卓嘉彥嘅圖書館</h1>
         <p class="subtitle">呢個圖書館係用嚟保存一啲開源嘅編程書籍</p>
         
-        <ul class="book-list">
-            <li class="book-item">
-                <a href="https://zhuojiayanstudio.github.io/books/linux-concise-cmd-zh_CN.pdf">Ubuntu Linux命令行簡明教程</a>
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="搜尋書籍..." oninput="filterBooks()">
+        </div>
+        
+        <ul class="book-list" id="bookList">
+            <li class="book-item" data-category="linux" onclick="openBook(this)">
+                <div class="book-header">
+                    <i class="fab fa-linux book-icon"></i>
+                    <a href="https://zhuojiayanstudio.github.io/books/linux-concise-cmd-zh_CN.pdf" target="_blank">Ubuntu Linux命令行簡明教程</a>
+                    <i class="fas fa-arrow-right book-arrow"></i>
+                </div>
                 <div class="book-meta">
-                    作者：Magi Su | 年份：2006 | 開源協議：GNU/GPL | <span style="color: rgba(255,255,255,0.6);">僅限簡體中文 <i class="fas fa-globe-asia"></i></span>
+                    <span class="badge"><i class="fas fa-user"></i> Magi Su</span>
+                    <span class="badge"><i class="fas fa-calendar"></i> 2006</span>
+                    <span class="badge"><i class="fas fa-balance-scale"></i> GNU/GPL</span>
+                    <span class="badge"><i class="fas fa-globe-asia"></i> 僅限簡體中文</span>
                 </div>
                 <div class="book-meta" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <i class="fas fa-thumbtack"></i> 繁體中文替代：<a href="https://linux.vbird.org/">鳥哥的 Linux 私房菜</a>
+                    <span class="badge" style="background: rgba(255,255,255,0.1);"><i class="fas fa-thumbtack"></i> 繁體中文替代：<a href="https://linux.vbird.org/" target="_blank" style="color: #fff; text-decoration: underline;">鳥哥的 Linux 私房菜</a></span>
                 </div>
             </li>
-            <li class="book-item">
-                <a href="https://zh.d2l.ai/">動手學深度學習</a>
+            <li class="book-item" data-category="ai" onclick="openBook(this)">
+                <div class="book-header">
+                    <i class="fas fa-brain book-icon"></i>
+                    <a href="https://zh.d2l.ai/" target="_blank">動手學深度學習</a>
+                    <i class="fas fa-arrow-right book-arrow"></i>
+                </div>
                 <div class="book-meta">
-                    作者：阿斯顿·張等 | 年份：2023 | 開源協議：MIT-0 | <span style="color: rgba(255,255,255,0.6);">僅限簡體中文 <i class="fas fa-globe-asia"></i></span>
+                    <span class="badge"><i class="fas fa-user"></i> 阿斯顿·張等</span>
+                    <span class="badge"><i class="fas fa-calendar"></i> 2023</span>
+                    <span class="badge"><i class="fas fa-balance-scale"></i> MIT-0</span>
+                    <span class="badge"><i class="fas fa-globe-asia"></i> 僅限簡體中文</span>
                 </div>
                 <div class="book-meta" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <i class="fas fa-thumbtack"></i> 繁體中文替代：<a href="http://speech.ee.ntu.edu.tw/~tlkagk/courses.html">李宏毅深度學習課程</a>
+                    <span class="badge" style="background: rgba(255,255,255,0.1);"><i class="fas fa-thumbtack"></i> 繁體中文替代：<a href="http://speech.ee.ntu.edu.tw/~tlkagk/courses.html" target="_blank" style="color: #fff; text-decoration: underline;">李宏毅深度學習課程</a></span>
                 </div>
             </li>
-            <li class="book-item">
-                <a href="https://github.com/xiaoweiChen/CPP-Concurrency-In-Action-2ed-2019">C++ 并发编程实战（中文版）</a>
+            <li class="book-item" data-category="cpp" onclick="openBook(this)">
+                <div class="book-header">
+                    <i class="fas fa-code book-icon"></i>
+                    <a href="https://github.com/xiaoweiChen/CPP-Concurrency-In-Action-2ed-2019" target="_blank">C++ 并发编程实战（中文版）</a>
+                    <i class="fas fa-arrow-right book-arrow"></i>
+                </div>
                 <div class="book-meta">
-                    作者：Anthony Williams | 年份：2019 | 出版社：Manning Publications | C++ 多線程權威指南
+                    <span class="badge"><i class="fas fa-user"></i> Anthony Williams</span>
+                    <span class="badge"><i class="fas fa-calendar"></i> 2019</span>
+                    <span class="badge"><i class="fas fa-building"></i> Manning Publications</span>
+                    <span class="badge"><i class="fas fa-microchip"></i> C++ 多線程權威指南</span>
                 </div>
             </li>
         </ul>
@@ -259,6 +441,26 @@
                     btn.classList.remove('copied');
                 }, 2000);
             });
+        }
+
+        function filterBooks() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.book-item');
+            items.forEach(item => {
+                const title = item.querySelector('a').textContent.toLowerCase();
+                if (title.includes(query)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+
+        function openBook(item) {
+            const link = item.querySelector('a');
+            if (link) {
+                window.open(link.href, '_blank');
+            }
         }
     </script>
 </body>
