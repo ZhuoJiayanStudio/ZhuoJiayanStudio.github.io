@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>卓嘉彦的图书馆</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -131,6 +132,34 @@
             line-height: 1.5;
         }
 
+        .share-btn {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 24px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .share-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .share-btn.copied {
+            background: rgba(76, 175, 80, 0.4);
+            border-color: rgba(76, 175, 80, 0.5);
+        }
+
         .footer {
             margin-top: 40px;
             padding-top: 20px;
@@ -156,7 +185,7 @@
 
     <div class="container">
 
-        <h1>📚 卓嘉彦的图书馆</h1>
+        <h1><i class="fas fa-book-open"></i> 卓嘉彦的图书馆</h1>
         <p class="subtitle">该图书馆旨在保存一些开源的编程书籍</p>
         
         <ul class="book-list">
@@ -183,7 +212,20 @@
         <div class="footer">
             <p>维护人：卓嘉彦</p>
             <p style="margin-top: 8px; font-size: 0.8em; color: rgba(255, 255, 255, 0.7);">服务器由 GitHub Pages 提供 | 编写由 QClaw 调用 Kimi 完成</p>
+            <button class="share-btn" onclick="shareSurprise(this)"><i class="fas fa-share-alt"></i> 分享</button>
         </div>
     </div>
+    <script>
+        function shareSurprise(btn) {
+            navigator.clipboard.writeText('https://zhuojiayanstudio.github.io/surprise.html').then(function() {
+                btn.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                btn.classList.add('copied');
+                setTimeout(function() {
+                    btn.innerHTML = '<i class="fas fa-share-alt"></i> 分享';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>

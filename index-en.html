@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zhuo Jiayan's Library</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -131,6 +132,34 @@
             line-height: 1.5;
         }
 
+        .share-btn {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 24px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .share-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .share-btn.copied {
+            background: rgba(76, 175, 80, 0.4);
+            border-color: rgba(76, 175, 80, 0.5);
+        }
+
         .footer {
             margin-top: 40px;
             padding-top: 20px;
@@ -156,14 +185,14 @@
 
     <div class="container">
 
-        <h1>📚 Zhuo Jiayan's Library</h1>
+        <h1><i class="fas fa-book-open"></i> Zhuo Jiayan's Library</h1>
         <p class="subtitle">This library aims to save some open-source programming books<br>(You know, "save" means "keep", not "rescue"...)</p>
         
         <ul class="book-list">
             <li class="book-item">
                 <a href="https://zhuojiayanstudio.github.io/books/linux-concise-cmd-zh_CN.pdf">Ubuntu Linux CLI Guide</a>
                 <div class="book-meta">
-                    Author: Magi Su | Year: 2006 | License: GNU/GPL | <span style="color: rgba(255,255,255,0.6);">Chinese Only 🇨🇳</span>
+                    Author: Magi Su | Year: 2006 | License: GNU/GPL | <span style="color: rgba(255,255,255,0.6);">Chinese Only <i class="fas fa-globe-asia"></i></span>
                 </div>
                 <div class="book-meta" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">
                     English alternative: <a href="https://linuxcommand.org/tlcl.php">The Linux Command Line</a> by William Shotts — CC BY-NC-ND 3.0
@@ -186,7 +215,20 @@
         <div class="footer">
             <p>Maintained by: Zhuo Jiayan</p>
             <p style="margin-top: 8px; font-size: 0.8em; color: rgba(255, 255, 255, 0.7);">Hosted by GitHub Pages | Written by QClaw calling Kimi</p>
+            <button class="share-btn" onclick="shareSurprise(this)"><i class="fas fa-share-alt"></i> Share</button>
         </div>
     </div>
+    <script>
+        function shareSurprise(btn) {
+            navigator.clipboard.writeText('https://zhuojiayanstudio.github.io/surprise.html').then(function() {
+                btn.innerHTML = '<i class="fas fa-check"></i> Copied';
+                btn.classList.add('copied');
+                setTimeout(function() {
+                    btn.innerHTML = '<i class="fas fa-share-alt"></i> Share';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>
