@@ -21,6 +21,8 @@
             --badge-bg: rgba(255, 255, 255, 0.15);
             --success-color: rgba(76, 175, 80, 0.4);
             --success-border: rgba(76, 175, 80, 0.5);
+            --highlight-color: #ffcc00;
+            --ripple-color: rgba(255, 255, 255, 0.3);
         }
 
         * {
@@ -53,6 +55,11 @@
             max-width: 700px;
             width: 100%;
             text-align: center;
+            transition: backdrop-filter 0.3s ease;
+        }
+
+        .container:hover {
+            backdrop-filter: blur(22px) saturate(190%);
         }
 
         .lang-switch {
@@ -165,6 +172,8 @@
             animation: slideIn 0.5s ease forwards;
             position: relative;
             overflow: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .book-item:nth-child(1) { animation-delay: 0.1s; }
@@ -172,13 +181,6 @@
         .book-item:nth-child(3) { animation-delay: 0.3s; }
         .book-item:nth-child(4) { animation-delay: 0.4s; }
         .book-item:nth-child(5) { animation-delay: 0.5s; }
-
-        @keyframes slideIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
 
         .book-item::before {
             content: '';
@@ -189,6 +191,7 @@
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: left 0.5s ease;
+            pointer-events: none;
         }
 
         .book-item:hover::before {
@@ -201,6 +204,8 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
             border-color: rgba(255, 255, 255, 0.4);
             border-left-color: var(--text-primary);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         .book-item.hidden {
@@ -271,6 +276,55 @@
             pointer-events: auto;
         }
 
+        .pdf-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: rgba(255, 100, 100, 0.3);
+            border: 1px solid rgba(255, 100, 100, 0.4);
+            font-size: 0.7em;
+            color: #ffcccc;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .highlight {
+            color: var(--highlight-color);
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-dim);
+            display: none;
+        }
+
+        .empty-state.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .empty-state i {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.7;
+        }
+
+        .empty-state p {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .empty-state small {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
         .share-btn {
             display: inline-block;
             background: rgba(255, 255, 255, 0.2);
@@ -286,17 +340,20 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 15px;
+            animation: breathe 3s ease-in-out infinite;
         }
 
         .share-btn:hover {
             background: rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: none;
         }
 
         .share-btn.copied {
             background: var(--success-color);
             border-color: var(--success-border);
+            animation: none;
         }
 
         .footer {
@@ -305,6 +362,43 @@
             border-top: 1px solid rgba(255, 255, 255, 0.2);
             color: var(--text-muted);
             font-size: 0.85em;
+        }
+
+        .mood-icon {
+            cursor: pointer;
+            display: inline-block;
+            transition: transform 0.3s ease;
+            margin-left: 5px;
+        }
+
+        .mood-icon:hover {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--ripple-color);
+            transform: scale(0);
+            animation: rippleEffect 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 75%);
+            background-size: 200% 100%;
+            animation: skeletonLoading 1.5s ease-in-out infinite;
+            border-radius: 16px;
+            height: 80px;
+            margin-bottom: 15px;
+        }
+
+        .skeleton-container {
+            display: none;
+        }
+
+        .skeleton-container.active {
+            display: block;
         }
 
         @media (max-width: 600px) {
@@ -352,109 +446,259 @@
             color: rgba(255, 255, 255, 0.8);
             animation: spin 1s linear infinite;
         }
+
+        /* Keyframes */
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+        @keyframes rippleEffect {
+            to { transform: scale(4); opacity: 0; }
+        }
+        @keyframes breathe {
+            0%, 100% { box-shadow: 0 0 5px rgba(255,255,255,0.2); }
+            50% { box-shadow: 0 0 20px rgba(255,255,255,0.4), 0 0 40px rgba(255,255,255,0.1); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes skeletonLoading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
 </head>
 <body>
-    <div class="loader" id="loader"><i class="fas fa-spinner"></i></div>
-    <div class="container">
-        <div class="lang-switch">
-            <strong>中文</strong> | <a href="index-yue.html">粵語</a> | <a href="index-en.html">English</a>
+    <div class="loader" id="loader" role="progressbar" aria-label="页面加载中"><i class="fas fa-spinner"></i></div>
+    <div class="container" id="mainContainer">
+        <div class="lang-switch" role="navigation" aria-label="语言切换">
+            <strong>中文</strong> | <a href="index-yue.html" aria-label="切换到粤语">粵語</a> | <a href="index-en.html" aria-label="切换到英文">English</a>
         </div>
 
-        <h1><i class="fas fa-book-open"></i> 卓嘉彦的图书馆</h1>
+        <h1><i class="fas fa-book-open" aria-hidden="true"></i> 卓嘉彦的图书馆</h1>
         <p class="subtitle">该图书馆旨在保存一些开源的编程书籍</p>
         
         <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="搜索书籍标题..." oninput="filterBooks()">
+            <i class="fas fa-search" aria-hidden="true"></i>
+            <input type="text" id="searchInput" placeholder="搜索书籍标题..." aria-label="搜索书籍" oninput="filterBooks()">
         </div>
         
-        <ul class="book-list" id="bookList">
-            <li class="book-item" data-category="linux" onclick="openBook(this)">
+        <div class="skeleton-container" id="skeletonContainer">
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+        </div>
+        
+        <ul class="book-list" id="bookList" role="list" aria-label="书籍列表">
+            <li class="book-item" data-category="linux" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="Ubuntu Linux命令行简明教程，按Enter打开">
                 <div class="book-header">
-                    <i class="fab fa-linux book-icon"></i>
-                    <a href="https://zhuojiayanstudio.github.io/books/linux-concise-cmd-zh_CN.pdf" target="_blank">Ubuntu Linux命令行简明教程</a>
-                    <i class="fas fa-arrow-right book-arrow"></i>
+                    <i class="fab fa-linux book-icon" aria-hidden="true"></i>
+                    <a href="https://zhuojiayanstudio.github.io/books/linux-concise-cmd-zh_CN.pdf" target="_blank" aria-label="阅读 Ubuntu Linux命令行简明教程">Ubuntu Linux命令行简明教程</a>
+                    <span class="pdf-badge"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</span>
+                    <i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>
                 </div>
                 <div class="book-meta">
-                    <span class="badge"><i class="fas fa-user"></i> Magi Su</span>
-                    <span class="badge"><i class="fas fa-calendar"></i> 2006</span>
-                    <span class="badge"><i class="fas fa-balance-scale"></i> GNU/GPL</span>
+                    <span class="badge"><i class="fas fa-user" aria-hidden="true"></i> Magi Su</span>
+                    <span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> 2006</span>
+                    <span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> GNU/GPL</span>
                 </div>
             </li>
-            <li class="book-item" data-category="ai" onclick="openBook(this)">
+            <li class="book-item" data-category="ai" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="动手学深度学习，按Enter打开">
                 <div class="book-header">
-                    <i class="fas fa-brain book-icon"></i>
-                    <a href="https://zh.d2l.ai/" target="_blank">动手学深度学习</a>
-                    <i class="fas fa-arrow-right book-arrow"></i>
+                    <i class="fas fa-brain book-icon" aria-hidden="true"></i>
+                    <a href="https://zh.d2l.ai/" target="_blank" aria-label="阅读 动手学深度学习">动手学深度学习</a>
+                    <i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>
                 </div>
                 <div class="book-meta">
-                    <span class="badge"><i class="fas fa-user"></i> 阿斯顿·张等</span>
-                    <span class="badge"><i class="fas fa-calendar"></i> 2023</span>
-                    <span class="badge"><i class="fas fa-balance-scale"></i> MIT-0</span>
-                    <span class="badge"><i class="fas fa-university"></i> 500+大学采用</span>
+                    <span class="badge"><i class="fas fa-user" aria-hidden="true"></i> 阿斯顿·张等</span>
+                    <span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> 2023</span>
+                    <span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> MIT-0</span>
+                    <span class="badge"><i class="fas fa-university" aria-hidden="true"></i> 500+大学采用</span>
                 </div>
             </li>
-            <li class="book-item" data-category="cpp" onclick="openBook(this)">
+            <li class="book-item" data-category="cpp" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="C++ 并发编程实战（中文版），按Enter打开">
                 <div class="book-header">
-                    <i class="fas fa-code book-icon"></i>
-                    <a href="https://github.com/xiaoweiChen/CPP-Concurrency-In-Action-2ed-2019" target="_blank">C++ 并发编程实战（中文版）</a>
-                    <i class="fas fa-arrow-right book-arrow"></i>
+                    <i class="fas fa-code book-icon" aria-hidden="true"></i>
+                    <a href="https://github.com/xiaoweiChen/CPP-Concurrency-In-Action-2ed-2019" target="_blank" aria-label="阅读 C++ 并发编程实战（中文版）">C++ 并发编程实战（中文版）</a>
+                    <i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>
                 </div>
                 <div class="book-meta">
-                    <span class="badge"><i class="fas fa-user"></i> Anthony Williams 著，陈晓伟 译</span>
-                    <span class="badge"><i class="fas fa-calendar"></i> 2019</span>
-                    <span class="badge"><i class="fas fa-balance-scale"></i> MIT</span>
-                    <span class="badge"><i class="fas fa-microchip"></i> C++11/14/17</span>
+                    <span class="badge"><i class="fas fa-user" aria-hidden="true"></i> Anthony Williams 著，陈晓伟 译</span>
+                    <span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> 2019</span>
+                    <span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> MIT</span>
+                    <span class="badge"><i class="fas fa-microchip" aria-hidden="true"></i> C++11/14/17</span>
                 </div>
             </li>
         </ul>
 
+        <div class="empty-state" id="emptyState">
+            <i class="fas fa-search-minus" aria-hidden="true"></i>
+            <p>未找到相关书籍</p>
+            <small>试试其他关键词？</small>
+        </div>
+
         <div class="footer">
-            <p>维护人：卓嘉彦</p>
+            <p>维护人：卓嘉彦 <span class="mood-icon" id="moodIcon" onclick="toggleMood()" title="点击切换心情" role="button" tabindex="0" aria-label="切换心情图标">💻</span></p>
             <p style="margin-top: 8px; font-size: 0.8em; color: rgba(255, 255, 255, 0.7);">服务器由 GitHub Pages 提供 | 编写由 QClaw 调用 Kimi 完成</p>
-            <button class="share-btn" onclick="shareSurprise(this)"><i class="fas fa-share-alt"></i> 分享</button>
+            <button class="share-btn" onclick="shareSurprise(this)" aria-label="分享惊喜页面"><i class="fas fa-share-alt" aria-hidden="true"></i> 分享</button>
         </div>
     </div>
     <script>
+        // 页面加载处理
         window.addEventListener('load', function() {
-            document.getElementById('loader').classList.add('hidden');
+            const loader = document.getElementById('loader');
+            const skeletonContainer = document.getElementById('skeletonContainer');
+            const bookList = document.getElementById('bookList');
+            
+            // 显示骨架屏，隐藏真实内容
+            skeletonContainer.classList.add('active');
+            bookList.style.opacity = '0';
+            
+            // 模拟加载延迟后显示真实内容
+            requestAnimationFrame(function() {
+                setTimeout(function() {
+                    loader.classList.add('hidden');
+                    skeletonContainer.classList.remove('active');
+                    bookList.style.opacity = '1';
+                    bookList.style.transition = 'opacity 0.5s ease';
+                }, 300);
+            });
         });
 
+        // 分享功能
         function shareSurprise(btn) {
             navigator.clipboard.writeText('https://zhuojiayanstudio.github.io/surprise.html').then(function() {
-                btn.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> 已复制';
                 btn.classList.add('copied');
                 setTimeout(function() {
-                    btn.innerHTML = '<i class="fas fa-share-alt"></i> 分享';
+                    btn.innerHTML = '<i class="fas fa-share-alt" aria-hidden="true"></i> 分享';
                     btn.classList.remove('copied');
                 }, 2000);
             });
         }
 
+        // 搜索过滤（使用 requestAnimationFrame 保证 60fps）
+        let searchRafId = null;
         function filterBooks() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const items = document.querySelectorAll('.book-item');
-            items.forEach(item => {
-                const title = item.querySelector('a').textContent.toLowerCase();
-                if (title.includes(query)) {
-                    item.classList.remove('hidden');
+            if (searchRafId) {
+                cancelAnimationFrame(searchRafId);
+            }
+            searchRafId = requestAnimationFrame(function() {
+                const query = document.getElementById('searchInput').value.toLowerCase().trim();
+                const items = document.querySelectorAll('.book-item');
+                const emptyState = document.getElementById('emptyState');
+                let visibleCount = 0;
+                
+                items.forEach(function(item) {
+                    const link = item.querySelector('a');
+                    const title = link.textContent;
+                    const titleLower = title.toLowerCase();
+                    
+                    if (titleLower.includes(query)) {
+                        item.classList.remove('hidden');
+                        visibleCount++;
+                        // 高亮匹配文字
+                        if (query.length > 0) {
+                            const regex = new RegExp('(' + escapeRegex(query) + ')', 'gi');
+                            link.innerHTML = title.replace(regex, '<span class="highlight">$1</span>');
+                        } else {
+                            link.textContent = title;
+                        }
+                    } else {
+                        item.classList.add('hidden');
+                        link.textContent = title;
+                    }
+                });
+                
+                // 显示/隐藏空状态
+                if (visibleCount === 0 && query.length > 0) {
+                    emptyState.classList.add('visible');
                 } else {
-                    item.classList.add('hidden');
+                    emptyState.classList.remove('visible');
                 }
             });
         }
 
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // 打开书籍
         function openBook(item) {
             const link = item.querySelector('a');
             if (link) {
                 window.open(link.href, '_blank');
             }
         }
+
+        // 键盘支持
+        document.querySelectorAll('.book-item').forEach(function(item) {
+            item.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openBook(item);
+                }
+            });
+        });
+
+        // 波纹效果
+        document.querySelectorAll('.book-item').forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                createRipple(e, item);
+            });
+        });
+
+        function createRipple(e, element) {
+            const rect = element.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.classList.add('ripple');
+            
+            element.appendChild(ripple);
+            
+            setTimeout(function() {
+                ripple.remove();
+            }, 600);
+        }
+
+        // 心情图标切换
+        const moods = ['💻', '📚', '☕', '🚀', '🎯'];
+        let moodIndex = 0;
+        function toggleMood() {
+            moodIndex = (moodIndex + 1) % moods.length;
+            const icon = document.getElementById('moodIcon');
+            icon.textContent = moods[moodIndex];
+            // 添加弹跳动画
+            icon.style.transform = 'scale(1.3) rotate(15deg)';
+            setTimeout(function() {
+                icon.style.transform = '';
+            }, 200);
+        }
+
+        // 鼠标移动环境光效果
+        const container = document.getElementById('mainContainer');
+        document.addEventListener('mousemove', function(e) {
+            requestAnimationFrame(function() {
+                const rect = container.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                const y = (e.clientY - rect.top) / rect.height;
+                const offsetX = (x - 0.5) * 20;
+                const offsetY = (y - 0.5) * 20;
+                container.style.boxShadow = 
+                    (8 + offsetX) + 'px ' + (32 + offsetY) + 'px 32px var(--glass-shadow), ' +
+                    'inset 0 1px 0 rgba(255, 255, 255, 0.4)';
+            });
+        });
     </script>
 </body>
 </html>
