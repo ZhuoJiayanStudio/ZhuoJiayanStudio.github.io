@@ -597,6 +597,135 @@
             });
         }
 
+        // 简单拼音映射（常见字符）
+        const pinyinMap = {
+            'a': '啊阿', 'ai': '爱埃艾哀', 'an': '安按案', 'ang': '昂',
+            'ba': '八巴把爸', 'bai': '白百拜', 'ban': '半班板办', 'bang': '帮邦棒',
+            'bao': '保包报宝', 'bei': '北被贝背', 'ben': '本奔', 'beng': '崩泵',
+            'bi': '比必笔毕', 'bian': '边变便编', 'biao': '标表', 'bie': '别',
+            'bin': '宾滨', 'bing': '兵冰并病', 'bo': '波博伯博', 'bu': '不布步部',
+            'ca': '擦', 'cai': '才采财彩', 'can': '参残餐', 'cang': '苍舱藏',
+            'cao': '草操', 'ce': '册测策', 'cen': '参', 'ceng': '层曾',
+            'cha': '查差茶插', 'chai': '拆柴', 'chan': '产缠禅', 'chang': '长常厂场',
+            'chao': '超朝潮', 'che': '车彻', 'chen': '陈沉晨', 'cheng': '成城程承',
+            'chi': '吃持池赤', 'chong': '充冲虫', 'chou': '抽仇愁', 'chu': '出初除处',
+            'chuan': '川穿传船', 'chuang': '床创窗', 'chui': '吹垂', 'chun': '春纯',
+            'chuo': '戳', 'ci': '此次词刺', 'cong': '从聪', 'cou': '凑',
+            'cu': '粗促', 'cuan': '窜', 'cui': '催脆', 'cun': '存村寸',
+            'cuo': '错挫', 'da': '大打达', 'dai': '大代带待', 'dan': '单但担丹',
+            'dang': '当党', 'dao': '到道导倒', 'de': '的得德', 'deng': '等灯登',
+            'di': '地第低底', 'dian': '电点店典', 'diao': '调掉', 'die': '跌叠',
+            'ding': '定顶订', 'diu': '丢', 'dong': '动东冬', 'dou': '都斗豆',
+            'du': '都读度独', 'duan': '短段断', 'dui': '对队', 'dun': '吨顿盾',
+            'duo': '多夺朵', 'e': '额饿恶', 'en': '恩', 'er': '而二儿',
+            'fa': '发法乏', 'fan': '反饭范凡', 'fang': '方放房访', 'fei': '非飞费',
+            'fen': '分份粉奋', 'feng': '风封丰峰', 'fo': '佛', 'fou': '否',
+            'fu': '夫服父付', 'ga': '咖嘎', 'gai': '改该概', 'gan': '干感敢甘',
+            'gang': '刚钢港', 'gao': '高告搞', 'ge': '个革格歌', 'gei': '给',
+            'gen': '根跟', 'geng': '更耕', 'gong': '工公共功', 'gou': '够狗构',
+            'gu': '古故股固', 'gua': '瓜挂', 'guai': '怪', 'guan': '关观管官',
+            'guang': '光广', 'gui': '规归贵鬼', 'gun': '滚棍', 'guo': '国过果',
+            'ha': '哈', 'hai': '海还害', 'han': '汉含寒', 'hang': '行航',
+            'hao': '好号毫', 'he': '和合河核', 'hei': '黑', 'hen': '很恨',
+            'heng': '横恒', 'hong': '红宏洪', 'hou': '后候厚', 'hu': '户护乎胡',
+            'hua': '化花话华', 'huai': '坏怀', 'huan': '还换环欢', 'huang': '黄皇',
+            'hui': '回会挥汇', 'hun': '婚混魂', 'huo': '活火或获',
+            'ji': '几计机基及', 'jia': '家加价假', 'jian': '间见建件', 'jiang': '将江讲',
+            'jiao': '教交角叫', 'jie': '结界接节', 'jin': '今进金近', 'jing': '经京精景',
+            'jiong': '窘', 'jiu': '九就旧究', 'ju': '据局举具', 'juan': '卷捐',
+            'jue': '决绝角', 'jun': '军均君',
+            'ka': '卡咖', 'kai': '开凯', 'kan': '看刊', 'kang': '康抗',
+            'kao': '考靠', 'ke': '可科克客', 'ken': '肯', 'keng': '坑',
+            'kong': '空孔', 'kou': '口', 'ku': '苦库', 'kua': '夸跨',
+            'kuai': '快块', 'kuan': '宽', 'kuang': '况狂框', 'kui': '亏愧',
+            'kun': '困昆', 'kuo': '扩括',
+            'la': '拉啦', 'lai': '来莱', 'lan': '兰蓝览', 'lang': '朗浪',
+            'lao': '老劳', 'le': '了乐', 'lei': '类累雷', 'leng': '冷',
+            'li': '理力里利', 'lian': '联连练', 'liang': '两量亮', 'liao': '了料聊',
+            'lie': '列烈', 'lin': '林临', 'ling': '令领零', 'liu': '六流留',
+            'long': '龙隆', 'lou': '楼漏', 'lu': '路陆录', 'luan': '乱卵',
+            'lun': '论轮', 'luo': '罗落逻', 'lv': '律绿旅',
+            'ma': '马妈麻', 'mai': '买卖麦', 'man': '满慢曼', 'mang': '忙盲',
+            'mao': '毛冒帽', 'me': '么', 'mei': '美没每妹', 'men': '门们',
+            'meng': '梦猛蒙', 'mi': '米密迷', 'mian': '面免棉', 'miao': '苗妙',
+            'mie': '灭', 'min': '民敏', 'ming': '名明命', 'miu': '谬',
+            'mo': '模末莫默', 'mou': '谋某', 'mu': '目母木',
+            'na': '那拿纳', 'nai': '乃奶耐', 'nan': '南难男', 'nang': '囊',
+            'nao': '脑闹', 'ne': '呢', 'nei': '内', 'nen': '嫩',
+            'neng': '能', 'ni': '你尼泥', 'nian': '年念', 'niang': '娘',
+            'niao': '鸟尿', 'nie': '捏聂', 'nin': '您', 'ning': '宁凝',
+            'niu': '牛扭', 'nong': '农弄', 'nu': '努怒', 'nv': '女',
+            'nuan': '暖', 'nue': '虐', 'nuo': '诺挪',
+            'o': '哦', 'ou': '欧偶',
+            'pa': '怕爬帕', 'pai': '排派', 'pan': '判盘潘', 'pang': '旁胖',
+            'pao': '跑炮', 'pei': '配培佩', 'pen': '喷盆', 'peng': '朋鹏',
+            'pi': '批皮匹', 'pian': '片偏', 'piao': '票飘', 'pie': '撇',
+            'pin': '品拼', 'ping': '平评屏', 'po': '破坡颇', 'pou': '剖',
+            'pu': '普扑铺',
+            'qi': '起七气期', 'qia': '恰洽', 'qian': '前千钱签', 'qiang': '强墙',
+            'qiao': '桥巧', 'qie': '且切', 'qin': '亲琴勤', 'qing': '情清青',
+            'qiong': '穷琼', 'qiu': '求球秋', 'qu': '区去取', 'quan': '全权泉',
+            'que': '确却', 'qun': '群',
+            'ran': '然燃', 'rang': '让', 'rao': '扰绕', 're': '热',
+            'ren': '人任认', 'reng': '仍', 'ri': '日', 'rong': '容融',
+            'rou': '肉柔', 'ru': '如入儒', 'ruan': '软', 'rui': '瑞',
+            'run': '润', 'ruo': '若弱',
+            'sa': '撒萨', 'sai': '赛塞', 'san': '三散', 'sang': '桑',
+            'sao': '扫骚', 'se': '色塞', 'sen': '森', 'seng': '僧',
+            'sha': '杀沙纱', 'shai': '晒', 'shan': '山善闪', 'shang': '上商',
+            'shao': '少绍', 'she': '社设舍', 'shen': '身深神审', 'sheng': '生声省升',
+            'shi': '是十时事实', 'shou': '手受首', 'shu': '书数术树', 'shua': '刷',
+            'shuai': '率帅', 'shuan': '拴', 'shuang': '双', 'shui': '水税',
+            'shun': '顺瞬', 'shuo': '说硕', 'si': '四死思司', 'song': '送松',
+            'sou': '搜', 'su': '速素苏', 'suan': '算酸', 'sui': '随岁碎',
+            'sun': '孙损', 'suo': '所索锁',
+            'ta': '他她它', 'tai': '太台泰', 'tan': '谈探坦', 'tang': '堂唐糖',
+            'tao': '讨逃套陶', 'te': '特', 'teng': '疼腾', 'ti': '提体题替',
+            'tian': '天田填', 'tiao': '条调跳', 'tie': '铁贴', 'ting': '听停庭',
+            'tong': '同通统童', 'tou': '头投透', 'tu': '图土突', 'tuan': '团',
+            'tui': '推退', 'tun': '吞屯', 'tuo': '托脱拖',
+            'wa': '瓦挖', 'wai': '外', 'wan': '万完晚玩', 'wang': '王网往',
+            'wei': '为位委微', 'wen': '文问温稳', 'weng': '翁', 'wo': '我握',
+            'wu': '无五物务', 'xi': '西系息习', 'xia': '下夏吓', 'xian': '先现线县',
+            'xiang': '相向想象', 'xiao': '小消笑效', 'xie': '写些谢协', 'xin': '新心信',
+            'xing': '行性星形', 'xiong': '兄雄胸', 'xiu': '修秀休', 'xu': '需许续',
+            'xuan': '选宣旋', 'xue': '学血雪', 'xun': '寻训迅',
+            'ya': '亚压呀', 'yan': '言严研验', 'yang': '阳杨养', 'yao': '要药摇',
+            'ye': '也业夜叶', 'yi': '一以意义易', 'yin': '因引银音', 'ying': '应英迎影',
+            'yo': '哟', 'yong': '用永勇', 'you': '有又由友', 'yu': '于与语雨',
+            'yuan': '元原远园', 'yue': '月越约乐', 'yun': '云运允',
+            'za': '杂砸', 'zai': '在再载', 'zan': '赞暂', 'zang': '脏藏',
+            'zao': '造早遭', 'ze': '则责', 'zei': '贼', 'zen': '怎',
+            'zeng': '增曾赠', 'zha': '扎炸', 'zhai': '债寨', 'zhan': '战展站',
+            'zhang': '长张章', 'zhao': '找照召', 'zhe': '者这着', 'zhen': '真阵镇',
+            'zheng': '正政争整', 'zhi': '之只知制', 'zhong': '中种重终', 'zhou': '州周洲',
+            'zhu': '主住注著', 'zhua': '抓', 'zhuai': '拽', 'zhuan': '转专',
+            'zhuang': '装状庄', 'zhui': '追', 'zhun': '准', 'zhuo': '卓捉桌',
+            'zi': '子自字', 'zong': '总宗', 'zou': '走', 'zu': '组足族',
+            'zuan': '钻', 'zui': '最罪', 'zun': '尊', 'zuo': '做作坐'
+        };
+
+        // 检查拼音匹配
+        function matchesPinyin(text, query) {
+            if (!query || query.length === 0) return true;
+            const lowerText = text.toLowerCase();
+            const lowerQuery = query.toLowerCase();
+            
+            // 直接匹配
+            if (lowerText.includes(lowerQuery)) return true;
+            
+            // 拼音匹配
+            for (let py in pinyinMap) {
+                if (lowerQuery.includes(py)) {
+                    const chars = pinyinMap[py];
+                    for (let char of chars) {
+                        if (lowerText.includes(char)) return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         // 搜索过滤（使用 requestAnimationFrame 保证 60fps）
         let searchRafId = null;
         function filterBooks() {
@@ -614,7 +743,7 @@
                     const title = link.textContent;
                     const titleLower = title.toLowerCase();
                     
-                    if (titleLower.includes(query)) {
+                    if (matchesPinyin(title, query)) {
                         item.classList.remove('hidden');
                         visibleCount++;
                         // 高亮匹配文字
