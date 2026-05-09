@@ -669,10 +669,136 @@
             setTimeout(() => alert.classList.remove('show'), 3000);
         }
 
+        // 默认书籍数据（从 library-data.json 加载）
+        const DEFAULT_BOOKS = [
+            {
+                "title": "Ubuntu Linux命令行简明教程",
+                "category": "Linux",
+                "language": "简体中文",
+                "license": "GNU/GPL",
+                "author": "Magi Su",
+                "year": "2006",
+                "description": "Ubuntu Linux 命令行入门教程",
+                "url": "https://zhuojiayanstudio.github.io/books/linux-concise-cmd-zh_CN.pdf",
+                "tags": "PDF, 教程, 入门",
+                "pages": ["index.html", "index-yue.html"],
+                "addedAt": "2026-05-07T10:00:00Z"
+            },
+            {
+                "title": "动手学深度学习",
+                "category": "人工智能",
+                "language": "简体中文",
+                "license": "MIT-0",
+                "author": "阿斯顿·张等",
+                "year": "2023",
+                "description": "500+大学采用的深度学习教材",
+                "url": "https://zh.d2l.ai/",
+                "tags": "教材, 深度学习, 热门",
+                "pages": ["index.html", "index-yue.html"],
+                "addedAt": "2026-05-07T11:30:00Z"
+            },
+            {
+                "title": "C++ 并发编程实战（中文版）",
+                "category": "编程语言",
+                "language": "简体中文",
+                "license": "MIT",
+                "author": "Anthony Williams 著，陈晓伟 译",
+                "year": "2019",
+                "description": "C++11/14/17 多线程权威指南",
+                "url": "https://github.com/xiaoweiChen/CPP-Concurrency-In-Action-2ed-2019",
+                "tags": "C++, 并发, 进阶",
+                "pages": ["index.html", "index-yue.html"],
+                "addedAt": "2026-05-07T13:00:00Z"
+            },
+            {
+                "title": "数理逻辑（Open Logic Project）",
+                "category": "数理逻辑",
+                "language": "英文",
+                "license": "CC BY 4.0",
+                "author": "多作者合著",
+                "year": "持续更新",
+                "description": "完整的数理逻辑教材，英文版",
+                "url": "books/open-logic-complete.pdf",
+                "tags": "PDF, 教材, 英文版",
+                "pages": ["index.html", "index-yue.html", "index-en.html"],
+                "addedAt": "2026-05-08T09:00:00Z"
+            },
+            {
+                "title": "The Linux Command Line",
+                "category": "Linux",
+                "language": "英文",
+                "license": "CC BY-NC-ND 3.0",
+                "author": "William Shotts",
+                "year": "",
+                "description": "Linux 命令行经典教程英文版",
+                "url": "https://linuxcommand.org/tlcl.php",
+                "tags": "英文版, 教程",
+                "pages": ["index-en.html"],
+                "addedAt": "2026-05-07T10:00:00Z"
+            },
+            {
+                "title": "Dive into Deep Learning",
+                "category": "人工智能",
+                "language": "英文",
+                "license": "MIT-0",
+                "author": "Aston Zhang et al.",
+                "year": "2023",
+                "description": "500+ Universities adopted",
+                "url": "https://zh.d2l.ai/",
+                "tags": "英文版, 教材",
+                "pages": ["index-en.html"],
+                "addedAt": "2026-05-07T11:30:00Z"
+            },
+            {
+                "title": "C++ Concurrency in Action",
+                "category": "编程语言",
+                "language": "英文",
+                "license": "MIT",
+                "author": "Anthony Williams",
+                "year": "2019",
+                "description": "C++11/14/17 Concurrency Guide",
+                "url": "https://www.manning.com/books/c-plus-plus-concurrency-in-action",
+                "tags": "英文版, C++, 并发",
+                "pages": ["index-en.html"],
+                "addedAt": "2026-05-07T13:00:00Z"
+            },
+            {
+                "title": "鳥哥的 Linux 私房菜",
+                "category": "Linux",
+                "language": "繁体中文",
+                "license": "",
+                "author": "鳥哥",
+                "year": "",
+                "description": "繁体中文 Linux 经典教程",
+                "url": "https://linux.vbird.org/",
+                "tags": "繁体中文, 教程, 替代资源",
+                "pages": ["index-yue.html"],
+                "addedAt": "2026-05-07T10:00:00Z"
+            },
+            {
+                "title": "李宏毅深度學習課程",
+                "category": "人工智能",
+                "language": "繁体中文",
+                "license": "",
+                "author": "李宏毅",
+                "year": "",
+                "description": "台大李宏毅教授深度学习课程",
+                "url": "http://speech.ee.ntu.edu.tw/~tlkagk/courses.html",
+                "tags": "繁体中文, 课程, 替代资源",
+                "pages": ["index-yue.html"],
+                "addedAt": "2026-05-07T11:30:00Z"
+            }
+        ];
+
         // 获取书籍数据
         function getBooks() {
             const data = localStorage.getItem('libraryBooks');
-            return data ? JSON.parse(data) : [];
+            if (data) {
+                return JSON.parse(data);
+            }
+            // 首次使用，加载默认数据
+            saveBooks(DEFAULT_BOOKS);
+            return DEFAULT_BOOKS;
         }
 
         // 保存书籍数据
@@ -710,8 +836,11 @@
                         <div class="book-meta">
                             <span class="badge"><i class="fas fa-folder"></i> ${escapeHtml(book.category)}</span>
                             <span class="badge"><i class="fas fa-language"></i> ${escapeHtml(book.language)}</span>
+                            ${book.author ? `<span class="badge"><i class="fas fa-user"></i> ${escapeHtml(book.author)}</span>` : ''}
+                            ${book.year ? `<span class="badge"><i class="fas fa-calendar"></i> ${escapeHtml(book.year)}</span>` : ''}
                             ${book.license ? `<span class="badge"><i class="fas fa-balance-scale"></i> ${escapeHtml(book.license)}</span>` : ''}
                             ${book.tags ? book.tags.split(',').map(tag => `<span class="badge"><i class="fas fa-tag"></i> ${escapeHtml(tag.trim())}</span>`).join('') : ''}
+                            ${book.pages ? `<span class="badge"><i class="fas fa-file-alt"></i> ${escapeHtml(book.pages.join(', '))}</span>` : ''}
                         </div>
                         ${book.description ? `<p style="color: var(--text-muted); margin-top: 8px; font-size: 0.9em;">${escapeHtml(book.description)}</p>` : ''}
                     </div>
