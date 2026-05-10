@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-HK">
+<html lang="zh-CN">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>卓嘉彥嘅圖書館</title>
+    <title id="pageTitle">卓嘉彦的图书馆</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
@@ -176,7 +176,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* 動畫延遲由 JS 動態設置 */
+        /* 动画延迟由 JS 动态设置 */
 
         .book-item::before {
             content: '';
@@ -469,18 +469,20 @@
     </style>
 </head>
 <body>
-    <div class="loader" id="loader" role="progressbar" aria-label="頁面加載中"><i class="fas fa-spinner"></i></div>
+    <div class="loader" id="loader" role="progressbar" aria-label="页面加载中"><i class="fas fa-spinner"></i></div>
     <div class="container" id="mainContainer">
-        <div class="lang-switch" role="navigation" aria-label="語言切換">
-            <a href="index.html" aria-label="切換到中文">中文</a> | <strong>粵語</strong> | <a href="index-en.html" aria-label="切換到英文">English</a>
+        <div class="lang-switch" role="navigation" aria-label="语言切换">
+            <a href="index.html" id="linkZh" aria-label="切换到中文">中文</a> | 
+            <a href="index-yue.html" id="linkYue" aria-label="切换到粤语">粵語</a> | 
+            <a href="index-en.html" id="linkEn" aria-label="切换到英文">English</a>
         </div>
 
-        <h1><i class="fas fa-book-open" aria-hidden="true"></i> 卓嘉彥嘅圖書館</h1>
-        <p class="subtitle">呢個圖書館係用嚟保存一啲開源嘅編程書籍</p>
+        <h1><i class="fas fa-book-open" aria-hidden="true"></i> <span id="mainTitle">卓嘉彦的图书馆</span></h1>
+        <p class="subtitle" id="subTitle">该图书馆旨在保存一些开源的编程书籍</p>
         
         <div class="search-box">
             <i class="fas fa-search" aria-hidden="true"></i>
-            <input type="text" id="searchInput" placeholder="搜尋書籍..." aria-label="搜尋書籍" oninput="filterBooks()">
+            <input type="text" id="searchInput" placeholder="搜索书籍标题..." aria-label="搜索书籍" oninput="filterBooks()">
         </div>
         
         <div class="skeleton-container" id="skeletonContainer">
@@ -489,32 +491,182 @@
             <div class="skeleton"></div>
         </div>
         
-        <ul class="book-list" id="bookList" role="list" aria-label="書籍列表">
-            <!-- 書籍由 JSON 動態加載 -->
+        <ul class="book-list" id="bookList" role="list" aria-label="书籍列表">
+            <!-- 书籍由 JSON 动态加载 -->
         </ul>
 
         <div class="empty-state" id="emptyState">
             <i class="fas fa-search-minus" aria-hidden="true"></i>
-            <p>搵唔到相關書籍</p>
-            <small>試下其他關鍵詞？</small>
+            <p id="emptyText">未找到相关书籍</p>
+            <small id="emptyHint">试试其他关键词？</small>
         </div>
 
         <div class="footer">
-            <p>維護人：卓嘉彥 <span class="mood-icon" id="moodIcon" onclick="toggleMood()" title="撳切換心情" role="button" tabindex="0" aria-label="切換心情圖標">💻</span></p>
-            <p style="margin-top: 8px; font-size: 0.8em; color: rgba(255, 255, 255, 0.7);">伺服器由 GitHub Pages 提供 | 編寫由 QClaw 調用 Kimi 完成</p>
-            <button class="share-btn" onclick="shareSurprise(this)" aria-label="分享驚喜頁面"><i class="fas fa-share-alt" aria-hidden="true"></i> 分享</button>
+            <p><span id="maintainerText">维护人：卓嘉彦</span> <span class="mood-icon" id="moodIcon" onclick="toggleMood()" title="点击切换心情" role="button" tabindex="0" aria-label="切换心情图标">💻</span></p>
+            <p style="margin-top: 8px; font-size: 0.8em; color: rgba(255, 255, 255, 0.7);" id="footerCredit">服务器由 GitHub Pages 提供 | 编写由 QClaw 调用 Kimi 完成</p>
+            <button class="share-btn" onclick="shareSurprise(this)" id="shareBtn" aria-label="分享惊喜页面"><i class="fas fa-share-alt" aria-hidden="true"></i> <span id="shareText">分享</span></button>
         </div>
     </div>
     <script>
-        // 分類圖標映射
-        const categoryIcons = {
-            'Linux': 'fab fa-linux',
-            '人工智能': 'fas fa-brain',
-            '编程语言': 'fas fa-code',
-            '数理逻辑': 'fas fa-brain'
+        // ==================== 语言配置 ====================
+        const I18N = {
+            zh: {
+                pageTitle: '卓嘉彦的图书馆',
+                mainTitle: '卓嘉彦的图书馆',
+                subTitle: '该图书馆旨在保存一些开源的编程书籍',
+                searchPlaceholder: '搜索书籍标题...',
+                searchAria: '搜索书籍',
+                bookListAria: '书籍列表',
+                emptyText: '未找到相关书籍',
+                emptyHint: '试试其他关键词？',
+                maintainer: '维护人：卓嘉彦',
+                moodTitle: '点击切换心情',
+                moodAria: '切换心情图标',
+                footerCredit: '服务器由 GitHub Pages 提供 | 编写由 QClaw 调用 Kimi 完成',
+                shareText: '分享',
+                shareAria: '分享惊喜页面',
+                shareCopied: '已复制',
+                loaderAria: '页面加载中',
+                langSwitchAria: '语言切换',
+                linkZh: '中文',
+                linkYue: '粵語',
+                linkEn: 'English',
+                categoryIcons: {
+                    'Linux': 'fab fa-linux',
+                    '人工智能': 'fas fa-brain',
+                    '编程语言': 'fas fa-code',
+                    '数理逻辑': 'fas fa-brain'
+                },
+                langBadge: '英文版',
+                langBadgeIcon: 'fas fa-globe-americas',
+                loadError: '加载书籍失败，请刷新页面重试',
+                currentPage: 'index.html',
+                htmlLang: 'zh-CN'
+            },
+            yue: {
+                pageTitle: '卓嘉彥嘅圖書館',
+                mainTitle: '卓嘉彥嘅圖書館',
+                subTitle: '呢個圖書館係用嚟保存一啲開源嘅編程書籍',
+                searchPlaceholder: '搜尋書籍...',
+                searchAria: '搜尋書籍',
+                bookListAria: '書籍列表',
+                emptyText: '搵唔到相關書籍',
+                emptyHint: '試下其他關鍵詞？',
+                maintainer: '維護人：卓嘉彥',
+                moodTitle: '撳切換心情',
+                moodAria: '切換心情圖標',
+                footerCredit: '伺服器由 GitHub Pages 提供 | 編寫由 QClaw 調用 Kimi 完成',
+                shareText: '分享',
+                shareAria: '分享驚喜頁面',
+                shareCopied: '已複製',
+                loaderAria: '頁面加載中',
+                langSwitchAria: '語言切換',
+                linkZh: '中文',
+                linkYue: '粵語',
+                linkEn: 'English',
+                categoryIcons: {
+                    'Linux': 'fab fa-linux',
+                    '人工智能': 'fas fa-brain',
+                    '编程语言': 'fas fa-code',
+                    '数理逻辑': 'fas fa-brain'
+                },
+                langBadge: '英文版',
+                langBadgeIcon: 'fas fa-globe-americas',
+                loadError: '加載書籍失敗，請刷新頁面重試',
+                currentPage: 'index-yue.html',
+                htmlLang: 'zh-HK'
+            },
+            en: {
+                pageTitle: "Zhuo Jiayan's Library",
+                mainTitle: "Zhuo Jiayan's Library",
+                subTitle: 'This library aims to save some open-source programming books<br>(You know, "save" means "keep", not "rescue"...)',
+                searchPlaceholder: 'Search books...',
+                searchAria: 'Search books',
+                bookListAria: 'Book list',
+                emptyText: 'No books found',
+                emptyHint: 'Try different keywords?',
+                maintainer: 'Maintained by: Zhuo Jiayan',
+                moodTitle: 'Click to change mood',
+                moodAria: 'Toggle mood icon',
+                footerCredit: 'Hosted by GitHub Pages | Written by QClaw calling Kimi',
+                shareText: 'Share',
+                shareAria: 'Share surprise page',
+                shareCopied: 'Copied',
+                loaderAria: 'Loading page',
+                langSwitchAria: 'Language switch',
+                linkZh: '中文',
+                linkYue: '粵語',
+                linkEn: 'English',
+                categoryIcons: {
+                    'Linux': 'fab fa-linux',
+                    'AI': 'fas fa-brain',
+                    'Programming': 'fas fa-code',
+                    'Logic': 'fas fa-brain'
+                },
+                langBadge: 'Chinese',
+                langBadgeIcon: 'fas fa-globe-asia',
+                loadError: 'Failed to load books. Please refresh.',
+                currentPage: 'index-en.html',
+                htmlLang: 'en'
+            }
         };
 
-        // 從 JSON 加載書籍
+        // 根据当前文件名检测语言
+        function detectLang() {
+            const path = window.location.pathname;
+            if (path.includes('index-yue')) return 'yue';
+            if (path.includes('index-en')) return 'en';
+            return 'zh';
+        }
+
+        const LANG = detectLang();
+        const T = I18N[LANG];
+
+        // 应用语言设置
+        function applyLanguage() {
+            document.documentElement.lang = T.htmlLang;
+            document.getElementById('pageTitle').textContent = T.pageTitle;
+            document.getElementById('mainTitle').textContent = T.mainTitle;
+            document.getElementById('subTitle').innerHTML = T.subTitle;
+            document.getElementById('searchInput').placeholder = T.searchPlaceholder;
+            document.getElementById('searchInput').setAttribute('aria-label', T.searchAria);
+            document.getElementById('bookList').setAttribute('aria-label', T.bookListAria);
+            document.getElementById('emptyText').textContent = T.emptyText;
+            document.getElementById('emptyHint').textContent = T.emptyHint;
+            document.getElementById('maintainerText').textContent = T.maintainer;
+            document.getElementById('moodIcon').setAttribute('title', T.moodTitle);
+            document.getElementById('moodIcon').setAttribute('aria-label', T.moodAria);
+            document.getElementById('footerCredit').textContent = T.footerCredit;
+            document.getElementById('shareText').textContent = T.shareText;
+            document.getElementById('shareBtn').setAttribute('aria-label', T.shareAria);
+            document.getElementById('loader').setAttribute('aria-label', T.loaderAria);
+            document.querySelector('.lang-switch').setAttribute('aria-label', T.langSwitchAria);
+            
+            // 更新语言切换链接文本
+            document.getElementById('linkZh').textContent = T.linkZh;
+            document.getElementById('linkYue').textContent = T.linkYue;
+            document.getElementById('linkEn').textContent = T.linkEn;
+            
+            // 高亮当前语言
+            const langMap = { zh: 'linkZh', yue: 'linkYue', en: 'linkEn' };
+            Object.keys(langMap).forEach(function(key) {
+                const el = document.getElementById(langMap[key]);
+                if (key === LANG) {
+                    const strong = document.createElement('strong');
+                    strong.textContent = el.textContent;
+                    el.parentNode.insertBefore(strong, el);
+                    el.remove();
+                }
+            });
+        }
+
+        // 页面加载时应用语言
+        applyLanguage();
+
+        // ==================== 分类图标映射 ====================
+        const categoryIcons = T.categoryIcons;
+
+        // ==================== 从 JSON 加载书籍 ====================
         async function loadBooksFromJSON() {
             const bookList = document.getElementById('bookList');
             const skeletonContainer = document.getElementById('skeletonContainer');
@@ -527,18 +679,20 @@
                 const response = await fetch('library-data.json');
                 const allBooks = await response.json();
                 
-                const currentPage = 'index-yue.html';
+                // 过滤出当前页面显示的书籍
+                const currentPage = T.currentPage;
                 const books = allBooks.filter(book => book.pages && book.pages.includes(currentPage));
                 
-                // 緩存數據
+                // 缓存数据
                 allBooksData = allBooks;
                 currentBooksData = books;
                 
+                // 渲染书籍列表
                 renderBookList(books);
                 
             } catch (error) {
-                console.error('加載書籍失敗:', error);
-                bookList.innerHTML = '<li class="book-item" style="text-align:center"><i class="fas fa-exclamation-triangle"></i> 加載書籍失敗，請刷新頁面重試</li>';
+                console.error('加载书籍失败:', error);
+                bookList.innerHTML = '<li class="book-item" style="text-align:center"><i class="fas fa-exclamation-triangle"></i> ' + T.loadError + '</li>';
             } finally {
                 loader.classList.add('hidden');
                 skeletonContainer.classList.remove('active');
@@ -547,7 +701,7 @@
             }
         }
 
-        // 綁定書籍事件
+        // ==================== 绑定书籍事件 ====================
         function bindBookEvents() {
             document.querySelectorAll('.book-item').forEach(function(item) {
                 item.addEventListener('keydown', function(e) {
@@ -562,24 +716,24 @@
             });
         }
 
-        // 頁面加載處理
+        // ==================== 页面加载处理 ====================
         window.addEventListener('load', function() {
             loadBooksFromJSON();
         });
 
-        // 分享功能
+        // ==================== 分享功能 ====================
         function shareSurprise(btn) {
             navigator.clipboard.writeText('https://zhuojiayanstudio.github.io/surprise.html').then(function() {
-                btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> 已複製';
+                btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> ' + T.shareCopied;
                 btn.classList.add('copied');
                 setTimeout(function() {
-                    btn.innerHTML = '<i class="fas fa-share-alt" aria-hidden="true"></i> 分享';
+                    btn.innerHTML = '<i class="fas fa-share-alt" aria-hidden="true"></i> ' + T.shareText;
                     btn.classList.remove('copied');
                 }, 2000);
             });
         }
 
-        // 漢字到拼音嘅映射（常用字）
+        // ==================== 汉字到拼音的映射（常用字）====================
         const charToPinyin = {
             '阿':'a','啊':'a','安':'an','按':'an','案':'an','昂':'ang',
             '八':'ba','巴':'ba','把':'ba','爸':'ba','白':'bai','百':'bai','拜':'bai','半':'ban','班':'ban','板':'ban','办':'ban','帮':'bang','邦':'bang','棒':'bang','保':'bao','包':'bao','报':'bao','宝':'bao','北':'bei','被':'bei','贝':'bei','背':'bei','本':'ben','奔':'ben','崩':'beng','泵':'beng','比':'bi','必':'bi','笔':'bi','毕':'bi','边':'bian','变':'bian','便':'bian','编':'bian','标':'biao','表':'biao','别':'bie','宾':'bin','滨':'bin','兵':'bing','冰':'bing','并':'bing','病':'bing','波':'bo','博':'bo','伯':'bo','不':'bu','布':'bu','步':'bu','部':'bu',
@@ -605,7 +759,7 @@
             '杂':'za','砸':'za','在':'zai','再':'zai','载':'zai','赞':'zan','暂':'zan','脏':'zang','藏':'zang','造':'zao','早':'zao','遭':'zao','则':'ze','责':'ze','贼':'zei','怎':'zen','增':'zeng','曾':'zeng','赠':'zeng','扎':'zha','炸':'zha','债':'zhai','寨':'zhai','战':'zhan','展':'zhan','站':'zhan','长':'zhang','张':'zhang','章':'zhang','找':'zhao','照':'zhao','召':'zhao','者':'zhe','这':'zhe','着':'zhe','真':'zhen','阵':'zhen','镇':'zhen','正':'zheng','政':'zheng','争':'zheng','整':'zheng','之':'zhi','只':'zhi','知':'zhi','制':'zhi','中':'zhong','种':'zhong','重':'zhong','终':'zhong','州':'zhou','周':'zhou','洲':'zhou','主':'zhu','住':'zhu','注':'zhu','著':'zhu','抓':'zhua','拽':'zhuai','转':'zhuan','专':'zhuan','装':'zhuang','状':'zhuang','庄':'zhuang','追':'zhui','准':'zhun','卓':'zhuo','捉':'zhuo','桌':'zhuo','子':'zi','自':'zi','字':'zi','总':'zong','宗':'zong','走':'zou','组':'zu','足':'zu','族':'zu','钻':'zuan','最':'zui','罪':'zui','尊':'zun','做':'zuo','作':'zuo','坐':'zuo'
         };
 
-        // 獲取字符串嘅拼音形式（用於搜索匹配）
+        // 获取字符串的拼音形式（用于搜索匹配）
         function getPinyin(text) {
             let result = '';
             for (let char of text) {
@@ -614,7 +768,7 @@
             return result;
         }
 
-        // 檢查拼音匹配（支持：直接匹配、拼音首字母匹配、全拼匹配）
+        // 检查拼音匹配（支持：直接匹配、拼音首字母匹配、全拼匹配）
         function matchesPinyin(text, query) {
             if (!query || query.length === 0) return true;
             const lowerText = text.toLowerCase();
@@ -623,13 +777,13 @@
             // 直接匹配
             if (lowerText.includes(lowerQuery)) return true;
             
-            // 將書名轉為拼音
+            // 将书名转为拼音
             const pinyinText = getPinyin(text).toLowerCase();
             
-            // 全拼匹配：如 "linux" 匹配 "linux minglinghang"
+            // 全拼匹配
             if (pinyinText.includes(lowerQuery)) return true;
             
-            // 拼音首字母匹配：如 "lml" 匹配 "linux minglinghang"
+            // 拼音首字母匹配
             const pinyinChars = getPinyin(text).split('');
             let queryIndex = 0;
             for (let char of pinyinChars) {
@@ -642,16 +796,49 @@
             return false;
         }
 
-        // 轉義正則特殊字符
+        // 转义正则特殊字符
         function escapeRegex(string) {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
 
-        // 當前頁面書籍數據緩存
+        // 当前页面书籍数据缓存
         let currentBooksData = [];
         let allBooksData = [];
 
-        // 渲染書籍列表（支持可選高亮查詢）
+        // 搜索过滤（使用 requestAnimationFrame 保证 60fps）
+        let searchRafId = null;
+        function filterBooks() {
+            if (searchRafId) {
+                cancelAnimationFrame(searchRafId);
+            }
+            searchRafId = requestAnimationFrame(function() {
+                const query = document.getElementById('searchInput').value.toLowerCase().trim();
+                const bookList = document.getElementById('bookList');
+                const emptyState = document.getElementById('emptyState');
+                
+                if (!query) {
+                    renderBookList(currentBooksData);
+                    emptyState.classList.remove('visible');
+                    return;
+                }
+                
+                // 从数据中过滤
+                const filtered = currentBooksData.filter(function(book) {
+                    return matchesPinyin(book.title, query);
+                });
+                
+                renderBookList(filtered, query);
+                
+                // 显示/隐藏空状态
+                if (filtered.length === 0) {
+                    emptyState.classList.add('visible');
+                } else {
+                    emptyState.classList.remove('visible');
+                }
+            });
+        }
+
+        // 渲染书籍列表（支持可选高亮查询）
         function renderBookList(books, highlightQuery) {
             const bookList = document.getElementById('bookList');
             
@@ -667,10 +854,10 @@
                     titleHtml = book.title.replace(regex, '<span class="highlight">$1</span>');
                 }
                 
-                return '<li class="book-item" data-category="' + book.category + '" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="' + book.title + '，撳Enter打開" style="animation-delay: ' + ((index + 1) * 0.1) + 's">' +
+                return '<li class="book-item" data-category="' + book.category + '" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="' + book.title + '，按Enter打开" style="animation-delay: ' + ((index + 1) * 0.1) + 's">' +
                     '<div class="book-header">' +
                         '<i class="' + (categoryIcons[book.category] || 'fas fa-book') + ' book-icon" aria-hidden="true"></i>' +
-                        '<a href="' + book.url + '" target="_blank" aria-label="閱讀 ' + book.title + '">' + titleHtml + '</a>' +
+                        '<a href="' + book.url + '" target="_blank" aria-label="阅读 ' + book.title + '">' + titleHtml + '</a>' +
                         (/\.pdf(?:\?|$)/i.test(book.url) ? '<span class="pdf-badge"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</span>' : '') +
                         '<i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>' +
                     '</div>' +
@@ -678,8 +865,7 @@
                         (book.author ? '<span class="badge"><i class="fas fa-user" aria-hidden="true"></i> ' + book.author + '</span>' : '') +
                         (book.year ? '<span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> ' + book.year + '</span>' : '') +
                         (book.license ? '<span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> ' + book.license + '</span>' : '') +
-                        (book.language === '英文' ? '<span class="badge"><i class="fas fa-globe-americas" aria-hidden="true"></i> 英文版</span>' : '') +
-                        (book.language === '简体中文' ? '<span class="badge"><i class="fas fa-globe-asia" aria-hidden="true"></i> 僅限簡體中文</span>' : '') +
+                        (book.language === (LANG === 'en' ? 'Chinese' : '英文') ? '<span class="badge"><i class="' + T.langBadgeIcon + '" aria-hidden="true"></i> ' + T.langBadge + '</span>' : '') +
                         (book.tags ? book.tags.split(',').map(function(tag) { return '<span class="badge"><i class="fas fa-tag" aria-hidden="true"></i> ' + tag.trim() + '</span>'; }).join('') : '') +
                     '</div>' +
                 '</li>';
@@ -688,37 +874,7 @@
             bindBookEvents();
         }
 
-        // 搜尋過濾（使用 requestAnimationFrame 保證 60fps）
-        let searchRafId = null;
-        function filterBooks() {
-            if (searchRafId) {
-                cancelAnimationFrame(searchRafId);
-            }
-            searchRafId = requestAnimationFrame(function() {
-                const query = document.getElementById('searchInput').value.toLowerCase().trim();
-                const emptyState = document.getElementById('emptyState');
-                
-                if (!query) {
-                    renderBookList(currentBooksData);
-                    emptyState.classList.remove('visible');
-                    return;
-                }
-                
-                const filtered = currentBooksData.filter(function(book) {
-                    return matchesPinyin(book.title, query);
-                });
-                
-                renderBookList(filtered, query);
-                
-                if (filtered.length === 0) {
-                    emptyState.classList.add('visible');
-                } else {
-                    emptyState.classList.remove('visible');
-                }
-            });
-        }
-
-        // 打開書籍
+        // 打开书籍
         function openBook(item) {
             const link = item.querySelector('a');
             if (link) {
@@ -726,7 +882,13 @@
             }
         }
 
-        // 鍵盤和波紋事件由 bindBookEvents() 統一綁定
+        // 从书名查找URL（用于搜索高亮后点击）
+        function findBookUrl(title) {
+            const book = currentBooksData.find(function(b) { return b.title === title; });
+            return book ? book.url : null;
+        }
+
+        // 键盘和波纹事件由 bindBookEvents() 统一绑定
 
         function createRipple(e, element) {
             const rect = element.getBoundingClientRect();
@@ -747,20 +909,21 @@
             }, 600);
         }
 
-        // 心情圖標切換
+        // 心情图标切换
         const moods = ['💻', '📚', '☕', '🚀', '🎯'];
         let moodIndex = 0;
         function toggleMood() {
             moodIndex = (moodIndex + 1) % moods.length;
             const icon = document.getElementById('moodIcon');
             icon.textContent = moods[moodIndex];
+            // 添加弹跳动画
             icon.style.transform = 'scale(1.3) rotate(15deg)';
             setTimeout(function() {
                 icon.style.transform = '';
             }, 200);
         }
 
-        // 滑鼠移動環境光效果（節流：每幀最多執行一次）
+        // 鼠标移动环境光效果（节流：每帧最多执行一次）
         const container = document.getElementById('mainContainer');
         let lightRafId = null;
         document.addEventListener('mousemove', function(e) {
