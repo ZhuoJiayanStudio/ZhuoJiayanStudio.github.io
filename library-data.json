@@ -138,5 +138,20 @@
       "index-yue.html"
     ],
     "addedAt": "2026-05-07T11:30:00Z"
+  },
+  {
+    "title": "Git教程",
+    "category": "其他",
+    "language": "简体中文",
+    "license": "CC BY-NC-SA 4.0",
+    "author": "廖雪峰",
+    "year": "2025",
+    "description": "史上最浅显易懂的Git教程！",
+    "url": "https://zhuojiayanstudio.github.io/books/Git教程-廖雪峰-2025-06-16.pdf",
+    "tags": "简体中文, 课程, 入门",
+    "pages": [
+      "index.html"
+    ],
+    "addedAt": "2026-05-10T09:19:58.286Z"
   }
 ]
