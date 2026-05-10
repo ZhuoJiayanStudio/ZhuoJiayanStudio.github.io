@@ -535,26 +535,11 @@
                 const currentPage = 'index-yue.html';
                 const books = allBooks.filter(book => book.pages && book.pages.includes(currentPage));
                 
-                bookList.innerHTML = books.map((book, index) => `
-                    <li class="book-item" data-category="${book.category}" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="${book.title}，撳Enter打開" style="animation-delay: ${(index + 1) * 0.1}s">
-                        <div class="book-header">
-                            <i class="${categoryIcons[book.category] || 'fas fa-book'} book-icon" aria-hidden="true"></i>
-                            <a href="${book.url}" target="_blank" aria-label="閱讀 ${book.title}">${book.title}</a>
-                            ${book.url.endsWith('.pdf') ? '<span class="pdf-badge"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</span>' : ''}
-                            <i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>
-                        </div>
-                        <div class="book-meta">
-                            ${book.author ? `<span class="badge"><i class="fas fa-user" aria-hidden="true"></i> ${book.author}</span>` : ''}
-                            ${book.year ? `<span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> ${book.year}</span>` : ''}
-                            ${book.license ? `<span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> ${book.license}</span>` : ''}
-                            ${book.language === '英文' ? '<span class="badge"><i class="fas fa-globe-americas" aria-hidden="true"></i> 英文版</span>' : ''}
-                            ${book.language === '简体中文' ? '<span class="badge"><i class="fas fa-globe-asia" aria-hidden="true"></i> 僅限簡體中文</span>' : ''}
-                            ${book.tags ? book.tags.split(',').map(tag => `<span class="badge"><i class="fas fa-tag" aria-hidden="true"></i> ${tag.trim()}</span>`).join('') : ''}
-                        </div>
-                    </li>
-                `).join('');
+                // 緩存數據
+                allBooksData = allBooks;
+                currentBooksData = books;
                 
-                bindBookEvents();
+                renderBookList(books);
                 
             } catch (error) {
                 console.error('加載書籍失敗:', error);
@@ -728,6 +713,52 @@
             return false;
         }
 
+        // 轉義正則特殊字符
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // 當前頁面書籍數據緩存
+        let currentBooksData = [];
+        let allBooksData = [];
+
+        // 渲染書籍列表（支持可選高亮查詢）
+        function renderBookList(books, highlightQuery) {
+            const bookList = document.getElementById('bookList');
+            
+            if (books.length === 0) {
+                bookList.innerHTML = '';
+                return;
+            }
+            
+            bookList.innerHTML = books.map(function(book, index) {
+                let titleHtml = book.title;
+                if (highlightQuery) {
+                    const regex = new RegExp('(' + escapeRegex(highlightQuery) + ')', 'gi');
+                    titleHtml = book.title.replace(regex, '<span class="highlight">$1</span>');
+                }
+                
+                return '<li class="book-item" data-category="' + book.category + '" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="' + book.title + '，撳Enter打開" style="animation-delay: ' + ((index + 1) * 0.1) + 's">' +
+                    '<div class="book-header">' +
+                        '<i class="' + (categoryIcons[book.category] || 'fas fa-book') + ' book-icon" aria-hidden="true"></i>' +
+                        '<a href="' + book.url + '" target="_blank" aria-label="閱讀 ' + book.title + '">' + titleHtml + '</a>' +
+                        (book.url.endsWith('.pdf') ? '<span class="pdf-badge"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</span>' : '') +
+                        '<i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>' +
+                    '</div>' +
+                    '<div class="book-meta">' +
+                        (book.author ? '<span class="badge"><i class="fas fa-user" aria-hidden="true"></i> ' + book.author + '</span>' : '') +
+                        (book.year ? '<span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> ' + book.year + '</span>' : '') +
+                        (book.license ? '<span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> ' + book.license + '</span>' : '') +
+                        (book.language === '英文' ? '<span class="badge"><i class="fas fa-globe-americas" aria-hidden="true"></i> 英文版</span>' : '') +
+                        (book.language === '简体中文' ? '<span class="badge"><i class="fas fa-globe-asia" aria-hidden="true"></i> 僅限簡體中文</span>' : '') +
+                        (book.tags ? book.tags.split(',').map(function(tag) { return '<span class="badge"><i class="fas fa-tag" aria-hidden="true"></i> ' + tag.trim() + '</span>'; }).join('') : '') +
+                    '</div>' +
+                '</li>';
+            }).join('');
+            
+            bindBookEvents();
+        }
+
         // 搜尋過濾（使用 requestAnimationFrame 保證 60fps）
         let searchRafId = null;
         function filterBooks() {
@@ -736,40 +767,26 @@
             }
             searchRafId = requestAnimationFrame(function() {
                 const query = document.getElementById('searchInput').value.toLowerCase().trim();
-                const items = document.querySelectorAll('.book-item');
                 const emptyState = document.getElementById('emptyState');
-                let visibleCount = 0;
                 
-                items.forEach(function(item) {
-                    const link = item.querySelector('a');
-                    const title = link.textContent;
-                    const titleLower = title.toLowerCase();
-                    
-                    if (matchesPinyin(title, query)) {
-                        item.classList.remove('hidden');
-                        visibleCount++;
-                        if (query.length > 0) {
-                            const regex = new RegExp('(' + escapeRegex(query) + ')', 'gi');
-                            link.innerHTML = title.replace(regex, '<span class="highlight">$1</span>');
-                        } else {
-                            link.textContent = title;
-                        }
-                    } else {
-                        item.classList.add('hidden');
-                        link.textContent = title;
-                    }
+                if (!query) {
+                    renderBookList(currentBooksData);
+                    emptyState.classList.remove('visible');
+                    return;
+                }
+                
+                const filtered = currentBooksData.filter(function(book) {
+                    return matchesPinyin(book.title, query);
                 });
                 
-                if (visibleCount === 0 && query.length > 0) {
+                renderBookList(filtered, query);
+                
+                if (filtered.length === 0) {
                     emptyState.classList.add('visible');
                 } else {
                     emptyState.classList.remove('visible');
                 }
             });
-        }
-
-        function escapeRegex(string) {
-            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
 
         // 打開書籍

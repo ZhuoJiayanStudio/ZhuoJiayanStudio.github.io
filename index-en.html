@@ -511,23 +511,104 @@
         </div>
     </div>
     <script>
-        // Page load handling
-        window.addEventListener('load', function() {
-            const loader = document.getElementById('loader');
-            const skeletonContainer = document.getElementById('skeletonContainer');
+        // Category icon mapping
+        const categoryIcons = {
+            'Linux': 'fab fa-linux',
+            'AI': 'fas fa-brain',
+            'Programming': 'fas fa-code',
+            'Logic': 'fas fa-brain'
+        };
+
+        // Current page book data cache
+        let currentBooksData = [];
+        let allBooksData = [];
+
+        // Load books from JSON
+        async function loadBooksFromJSON() {
             const bookList = document.getElementById('bookList');
+            const skeletonContainer = document.getElementById('skeletonContainer');
+            const loader = document.getElementById('loader');
             
             skeletonContainer.classList.add('active');
             bookList.style.opacity = '0';
             
-            requestAnimationFrame(function() {
-                setTimeout(function() {
-                    loader.classList.add('hidden');
-                    skeletonContainer.classList.remove('active');
-                    bookList.style.opacity = '1';
-                    bookList.style.transition = 'opacity 0.5s ease';
-                }, 300);
+            try {
+                const response = await fetch('library-data.json');
+                const allBooks = await response.json();
+                
+                const currentPage = 'index-en.html';
+                const books = allBooks.filter(book => book.pages && book.pages.includes(currentPage));
+                
+                allBooksData = allBooks;
+                currentBooksData = books;
+                
+                renderBookList(books);
+                
+            } catch (error) {
+                console.error('Failed to load books:', error);
+                bookList.innerHTML = '<li class="book-item" style="text-align:center"><i class="fas fa-exclamation-triangle"></i> Failed to load books. Please refresh.</li>';
+            } finally {
+                loader.classList.add('hidden');
+                skeletonContainer.classList.remove('active');
+                bookList.style.opacity = '1';
+                bookList.style.transition = 'opacity 0.5s ease';
+            }
+        }
+
+        // Render book list (with optional highlight query)
+        function renderBookList(books, highlightQuery) {
+            const bookList = document.getElementById('bookList');
+            
+            if (books.length === 0) {
+                bookList.innerHTML = '';
+                return;
+            }
+            
+            bookList.innerHTML = books.map(function(book, index) {
+                let titleHtml = book.title;
+                if (highlightQuery) {
+                    const regex = new RegExp('(' + escapeRegex(highlightQuery) + ')', 'gi');
+                    titleHtml = book.title.replace(regex, '<span class="highlight">$1</span>');
+                }
+                
+                return '<li class="book-item" data-category="' + book.category + '" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="' + book.title + ', press Enter to open" style="animation-delay: ' + ((index + 1) * 0.1) + 's">' +
+                    '<div class="book-header">' +
+                        '<i class="' + (categoryIcons[book.category] || 'fas fa-book') + ' book-icon" aria-hidden="true"></i>' +
+                        '<a href="' + book.url + '" target="_blank" aria-label="Read ' + book.title + '">' + titleHtml + '</a>' +
+                        (book.url.endsWith('.pdf') ? '<span class="pdf-badge"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</span>' : '') +
+                        '<i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>' +
+                    '</div>' +
+                    '<div class="book-meta">' +
+                        (book.author ? '<span class="badge"><i class="fas fa-user" aria-hidden="true"></i> ' + book.author + '</span>' : '') +
+                        (book.year ? '<span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> ' + book.year + '</span>' : '') +
+                        (book.license ? '<span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> ' + book.license + '</span>' : '') +
+                        (book.language === 'Chinese' ? '<span class="badge"><i class="fas fa-globe-asia" aria-hidden="true"></i> Chinese</span>' : '') +
+                        (book.tags ? book.tags.split(',').map(function(tag) { return '<span class="badge"><i class="fas fa-tag" aria-hidden="true"></i> ' + tag.trim() + '</span>'; }).join('') : '') +
+                    '</div>' +
+                '</li>';
+            }).join('');
+            
+            bindBookEvents();
+        }
+
+        // Bind book events
+        function bindBookEvents() {
+            document.querySelectorAll('.book-item').forEach(function(item) {
+                item.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openBook(item);
+                    }
+                });
+                item.addEventListener('click', function(e) {
+                    createRipple(e, item);
+                });
             });
+        }
+
+        // Page load handling
+        window.addEventListener('load', function() {
+            loadBooksFromJSON();
         });
 
         // Share functionality
@@ -542,6 +623,11 @@
             });
         }
 
+        // Escape regex special characters
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
         // Search filtering with requestAnimationFrame for 60fps
         let searchRafId = null;
         function filterBooks() {
@@ -550,40 +636,26 @@
             }
             searchRafId = requestAnimationFrame(function() {
                 const query = document.getElementById('searchInput').value.toLowerCase().trim();
-                const items = document.querySelectorAll('.book-item');
                 const emptyState = document.getElementById('emptyState');
-                let visibleCount = 0;
                 
-                items.forEach(function(item) {
-                    const link = item.querySelector('a');
-                    const title = link.textContent;
-                    const titleLower = title.toLowerCase();
-                    
-                    if (titleLower.includes(query)) {
-                        item.classList.remove('hidden');
-                        visibleCount++;
-                        if (query.length > 0) {
-                            const regex = new RegExp('(' + escapeRegex(query) + ')', 'gi');
-                            link.innerHTML = title.replace(regex, '<span class="highlight">$1</span>');
-                        } else {
-                            link.textContent = title;
-                        }
-                    } else {
-                        item.classList.add('hidden');
-                        link.textContent = title;
-                    }
+                if (!query) {
+                    renderBookList(currentBooksData);
+                    emptyState.classList.remove('visible');
+                    return;
+                }
+                
+                const filtered = currentBooksData.filter(function(book) {
+                    return book.title.toLowerCase().includes(query);
                 });
                 
-                if (visibleCount === 0 && query.length > 0) {
+                renderBookList(filtered, query);
+                
+                if (filtered.length === 0) {
                     emptyState.classList.add('visible');
                 } else {
                     emptyState.classList.remove('visible');
                 }
             });
-        }
-
-        function escapeRegex(string) {
-            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
 
         // Open book
@@ -593,23 +665,6 @@
                 window.open(link.href, '_blank');
             }
         }
-
-        // Keyboard support
-        document.querySelectorAll('.book-item').forEach(function(item) {
-            item.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    openBook(item);
-                }
-            });
-        });
-
-        // Ripple effect
-        document.querySelectorAll('.book-item').forEach(function(item) {
-            item.addEventListener('click', function(e) {
-                createRipple(e, item);
-            });
-        });
 
         function createRipple(e, element) {
             const rect = element.getBoundingClientRect();

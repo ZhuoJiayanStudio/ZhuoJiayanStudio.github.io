@@ -536,27 +536,12 @@
                 const currentPage = 'index.html';
                 const books = allBooks.filter(book => book.pages && book.pages.includes(currentPage));
                 
-                // 渲染书籍列表
-                bookList.innerHTML = books.map((book, index) => `
-                    <li class="book-item" data-category="${book.category}" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="${book.title}，按Enter打开" style="animation-delay: ${(index + 1) * 0.1}s">
-                        <div class="book-header">
-                            <i class="${categoryIcons[book.category] || 'fas fa-book'} book-icon" aria-hidden="true"></i>
-                            <a href="${book.url}" target="_blank" aria-label="阅读 ${book.title}">${book.title}</a>
-                            ${book.url.endsWith('.pdf') ? '<span class="pdf-badge"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</span>' : ''}
-                            <i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>
-                        </div>
-                        <div class="book-meta">
-                            ${book.author ? `<span class="badge"><i class="fas fa-user" aria-hidden="true"></i> ${book.author}</span>` : ''}
-                            ${book.year ? `<span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> ${book.year}</span>` : ''}
-                            ${book.license ? `<span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> ${book.license}</span>` : ''}
-                            ${book.language === '英文' ? '<span class="badge"><i class="fas fa-globe-americas" aria-hidden="true"></i> 英文版</span>' : ''}
-                            ${book.tags ? book.tags.split(',').map(tag => `<span class="badge"><i class="fas fa-tag" aria-hidden="true"></i> ${tag.trim()}</span>`).join('') : ''}
-                        </div>
-                    </li>
-                `).join('');
+                // 缓存数据
+                allBooksData = allBooks;
+                currentBooksData = books;
                 
-                // 重新绑定事件
-                bindBookEvents();
+                // 渲染书籍列表
+                renderBookList(books);
                 
             } catch (error) {
                 console.error('加载书籍失败:', error);
@@ -730,6 +715,15 @@
             return false;
         }
 
+        // 转义正则特殊字符
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // 当前页面书籍数据缓存
+        let currentBooksData = [];
+        let allBooksData = [];
+
         // 搜索过滤（使用 requestAnimationFrame 保证 60fps）
         let searchRafId = null;
         function filterBooks() {
@@ -738,33 +732,25 @@
             }
             searchRafId = requestAnimationFrame(function() {
                 const query = document.getElementById('searchInput').value.toLowerCase().trim();
-                const items = document.querySelectorAll('.book-item');
+                const bookList = document.getElementById('bookList');
                 const emptyState = document.getElementById('emptyState');
-                let visibleCount = 0;
                 
-                items.forEach(function(item) {
-                    const link = item.querySelector('a');
-                    const title = link.textContent;
-                    const titleLower = title.toLowerCase();
-                    
-                    if (matchesPinyin(title, query)) {
-                        item.classList.remove('hidden');
-                        visibleCount++;
-                        // 高亮匹配文字
-                        if (query.length > 0) {
-                            const regex = new RegExp('(' + escapeRegex(query) + ')', 'gi');
-                            link.innerHTML = title.replace(regex, '<span class="highlight">$1</span>');
-                        } else {
-                            link.textContent = title;
-                        }
-                    } else {
-                        item.classList.add('hidden');
-                        link.textContent = title;
-                    }
+                if (!query) {
+                    // 无搜索词，显示全部
+                    renderBookList(currentBooksData);
+                    emptyState.classList.remove('visible');
+                    return;
+                }
+                
+                // 从数据中过滤
+                const filtered = currentBooksData.filter(function(book) {
+                    return matchesPinyin(book.title, query);
                 });
                 
+                renderBookList(filtered, query);
+                
                 // 显示/隐藏空状态
-                if (visibleCount === 0 && query.length > 0) {
+                if (filtered.length === 0) {
                     emptyState.classList.add('visible');
                 } else {
                     emptyState.classList.remove('visible');
@@ -772,8 +758,40 @@
             });
         }
 
-        function escapeRegex(string) {
-            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        // 渲染书籍列表（支持可选高亮查询）
+        function renderBookList(books, highlightQuery) {
+            const bookList = document.getElementById('bookList');
+            
+            if (books.length === 0) {
+                bookList.innerHTML = '';
+                return;
+            }
+            
+            bookList.innerHTML = books.map(function(book, index) {
+                let titleHtml = book.title;
+                if (highlightQuery) {
+                    const regex = new RegExp('(' + escapeRegex(highlightQuery) + ')', 'gi');
+                    titleHtml = book.title.replace(regex, '<span class="highlight">$1</span>');
+                }
+                
+                return '<li class="book-item" data-category="' + book.category + '" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="' + book.title + '，按Enter打开" style="animation-delay: ' + ((index + 1) * 0.1) + 's">' +
+                    '<div class="book-header">' +
+                        '<i class="' + (categoryIcons[book.category] || 'fas fa-book') + ' book-icon" aria-hidden="true"></i>' +
+                        '<a href="' + book.url + '" target="_blank" aria-label="阅读 ' + book.title + '">' + titleHtml + '</a>' +
+                        (book.url.endsWith('.pdf') ? '<span class="pdf-badge"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</span>' : '') +
+                        '<i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>' +
+                    '</div>' +
+                    '<div class="book-meta">' +
+                        (book.author ? '<span class="badge"><i class="fas fa-user" aria-hidden="true"></i> ' + book.author + '</span>' : '') +
+                        (book.year ? '<span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> ' + book.year + '</span>' : '') +
+                        (book.license ? '<span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> ' + book.license + '</span>' : '') +
+                        (book.language === '英文' ? '<span class="badge"><i class="fas fa-globe-americas" aria-hidden="true"></i> 英文版</span>' : '') +
+                        (book.tags ? book.tags.split(',').map(function(tag) { return '<span class="badge"><i class="fas fa-tag" aria-hidden="true"></i> ' + tag.trim() + '</span>'; }).join('') : '') +
+                    '</div>' +
+                '</li>';
+            }).join('');
+            
+            bindBookEvents();
         }
 
         // 打开书籍
@@ -782,6 +800,12 @@
             if (link) {
                 window.open(link.href, '_blank');
             }
+        }
+
+        // 从书名查找URL（用于搜索高亮后点击）
+        function findBookUrl(title) {
+            const book = currentBooksData.find(function(b) { return b.title === title; });
+            return book ? book.url : null;
         }
 
         // 键盘支持
