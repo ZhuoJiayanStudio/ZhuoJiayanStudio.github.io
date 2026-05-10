@@ -176,12 +176,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        .book-item:nth-child(1) { animation-delay: 0.1s; }
-        .book-item:nth-child(2) { animation-delay: 0.2s; }
-        .book-item:nth-child(3) { animation-delay: 0.3s; }
-        .book-item:nth-child(4) { animation-delay: 0.4s; }
-        .book-item:nth-child(5) { animation-delay: 0.5s; }
-        .book-item:nth-child(6) { animation-delay: 0.6s; }
+        /* Animation delays set dynamically by JS */
 
         .book-item::before {
             content: '';
@@ -575,7 +570,7 @@
                     '<div class="book-header">' +
                         '<i class="' + (categoryIcons[book.category] || 'fas fa-book') + ' book-icon" aria-hidden="true"></i>' +
                         '<a href="' + book.url + '" target="_blank" aria-label="Read ' + book.title + '">' + titleHtml + '</a>' +
-                        (book.url.endsWith('.pdf') ? '<span class="pdf-badge"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</span>' : '') +
+                        (/\.pdf(?:\?|$)/i.test(book.url) ? '<span class="pdf-badge"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</span>' : '') +
                         '<i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>' +
                     '</div>' +
                     '<div class="book-meta">' +
@@ -698,10 +693,13 @@
             }, 200);
         }
 
-        // Ambient light effect on mouse move
+        // Ambient light effect on mouse move (throttled: max once per frame)
         const container = document.getElementById('mainContainer');
+        let lightRafId = null;
         document.addEventListener('mousemove', function(e) {
-            requestAnimationFrame(function() {
+            if (lightRafId) return;
+            lightRafId = requestAnimationFrame(function() {
+                lightRafId = null;
                 const rect = container.getBoundingClientRect();
                 const x = (e.clientX - rect.left) / rect.width;
                 const y = (e.clientY - rect.top) / rect.height;
