@@ -254,7 +254,7 @@ function toggleMood() {
 
 // ============ 分享功能 ============
 function shareSurprise(btn) {
-    navigator.clipboard.writeText('https://zhuojiayanstudio.github.io/').then(() => {
+    navigator.clipboard.writeText('https://zhuojiayanstudio.github.io/surprise.html').then(() => {
         btn.innerHTML = `<i class="fas fa-check" aria-hidden="true"></i> ${T.shareCopied}`;
         btn.classList.add('copied');
         setTimeout(() => {
