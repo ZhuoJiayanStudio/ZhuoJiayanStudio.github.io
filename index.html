@@ -495,60 +495,7 @@
         </div>
         
         <ul class="book-list" id="bookList" role="list" aria-label="书籍列表">
-            <li class="book-item" data-category="linux" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="Ubuntu Linux命令行简明教程，按Enter打开">
-                <div class="book-header">
-                    <i class="fab fa-linux book-icon" aria-hidden="true"></i>
-                    <a href="https://zhuojiayanstudio.github.io/books/linux-concise-cmd-zh_CN.pdf" target="_blank" aria-label="阅读 Ubuntu Linux命令行简明教程">Ubuntu Linux命令行简明教程</a>
-                    <span class="pdf-badge"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</span>
-                    <i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>
-                </div>
-                <div class="book-meta">
-                    <span class="badge"><i class="fas fa-user" aria-hidden="true"></i> Magi Su</span>
-                    <span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> 2006</span>
-                    <span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> GNU/GPL</span>
-                </div>
-            </li>
-            <li class="book-item" data-category="ai" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="动手学深度学习，按Enter打开">
-                <div class="book-header">
-                    <i class="fas fa-brain book-icon" aria-hidden="true"></i>
-                    <a href="https://zh.d2l.ai/" target="_blank" aria-label="阅读 动手学深度学习">动手学深度学习</a>
-                    <i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>
-                </div>
-                <div class="book-meta">
-                    <span class="badge"><i class="fas fa-user" aria-hidden="true"></i> 阿斯顿·张等</span>
-                    <span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> 2023</span>
-                    <span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> MIT-0</span>
-                    <span class="badge"><i class="fas fa-university" aria-hidden="true"></i> 500+大学采用</span>
-                </div>
-            </li>
-            <li class="book-item" data-category="cpp" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="C++ 并发编程实战（中文版），按Enter打开">
-                <div class="book-header">
-                    <i class="fas fa-code book-icon" aria-hidden="true"></i>
-                    <a href="https://github.com/xiaoweiChen/CPP-Concurrency-In-Action-2ed-2019" target="_blank" aria-label="阅读 C++ 并发编程实战（中文版）">C++ 并发编程实战（中文版）</a>
-                    <i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>
-                </div>
-                <div class="book-meta">
-                    <span class="badge"><i class="fas fa-user" aria-hidden="true"></i> Anthony Williams 著，陈晓伟 译</span>
-                    <span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> 2019</span>
-                    <span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> MIT</span>
-                    <span class="badge"><i class="fas fa-microchip" aria-hidden="true"></i> C++11/14/17</span>
-                </div>
-            </li>
-            <li class="book-item" data-category="logic" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="数理逻辑（Open Logic Project），按Enter打开">
-                <div class="book-header">
-                    <i class="fas fa-brain book-icon" aria-hidden="true"></i>
-                    <a href="books/open-logic-complete.pdf" target="_blank" aria-label="阅读 数理逻辑（Open Logic Project）">数理逻辑（Open Logic Project）</a>
-                    <span class="pdf-badge"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</span>
-                    <i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>
-                </div>
-                <div class="book-meta">
-                    <span class="badge"><i class="fas fa-user" aria-hidden="true"></i> 多作者合著</span>
-                    <span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> 持续更新</span>
-                    <span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> CC BY 4.0</span>
-                    <span class="badge"><i class="fas fa-globe-americas" aria-hidden="true"></i> 英文版</span>
-                    <span class="badge"><i class="fas fa-graduation-cap" aria-hidden="true"></i> 完整教材</span>
-                </div>
-            </li>
+            <!-- 书籍由 JSON 动态加载 -->
         </ul>
 
         <div class="empty-state" id="emptyState">
@@ -564,25 +511,82 @@
         </div>
     </div>
     <script>
-        // 页面加载处理
-        window.addEventListener('load', function() {
-            const loader = document.getElementById('loader');
-            const skeletonContainer = document.getElementById('skeletonContainer');
+        // 分类图标映射
+        const categoryIcons = {
+            'Linux': 'fab fa-linux',
+            '人工智能': 'fas fa-brain',
+            '编程语言': 'fas fa-code',
+            '数理逻辑': 'fas fa-brain'
+        };
+
+        // 从 JSON 加载书籍
+        async function loadBooksFromJSON() {
             const bookList = document.getElementById('bookList');
+            const skeletonContainer = document.getElementById('skeletonContainer');
+            const loader = document.getElementById('loader');
             
-            // 显示骨架屏，隐藏真实内容
             skeletonContainer.classList.add('active');
             bookList.style.opacity = '0';
             
-            // 模拟加载延迟后显示真实内容
-            requestAnimationFrame(function() {
-                setTimeout(function() {
-                    loader.classList.add('hidden');
-                    skeletonContainer.classList.remove('active');
-                    bookList.style.opacity = '1';
-                    bookList.style.transition = 'opacity 0.5s ease';
-                }, 300);
+            try {
+                const response = await fetch('library-data.json');
+                const allBooks = await response.json();
+                
+                // 过滤出当前页面显示的书籍
+                const currentPage = 'index.html';
+                const books = allBooks.filter(book => book.pages && book.pages.includes(currentPage));
+                
+                // 渲染书籍列表
+                bookList.innerHTML = books.map((book, index) => `
+                    <li class="book-item" data-category="${book.category}" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="${book.title}，按Enter打开" style="animation-delay: ${(index + 1) * 0.1}s">
+                        <div class="book-header">
+                            <i class="${categoryIcons[book.category] || 'fas fa-book'} book-icon" aria-hidden="true"></i>
+                            <a href="${book.url}" target="_blank" aria-label="阅读 ${book.title}">${book.title}</a>
+                            ${book.url.endsWith('.pdf') ? '<span class="pdf-badge"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</span>' : ''}
+                            <i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>
+                        </div>
+                        <div class="book-meta">
+                            ${book.author ? `<span class="badge"><i class="fas fa-user" aria-hidden="true"></i> ${book.author}</span>` : ''}
+                            ${book.year ? `<span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> ${book.year}</span>` : ''}
+                            ${book.license ? `<span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> ${book.license}</span>` : ''}
+                            ${book.language === '英文' ? '<span class="badge"><i class="fas fa-globe-americas" aria-hidden="true"></i> 英文版</span>' : ''}
+                            ${book.tags ? book.tags.split(',').map(tag => `<span class="badge"><i class="fas fa-tag" aria-hidden="true"></i> ${tag.trim()}</span>`).join('') : ''}
+                        </div>
+                    </li>
+                `).join('');
+                
+                // 重新绑定事件
+                bindBookEvents();
+                
+            } catch (error) {
+                console.error('加载书籍失败:', error);
+                bookList.innerHTML = '<li class="book-item" style="text-align:center"><i class="fas fa-exclamation-triangle"></i> 加载书籍失败，请刷新页面重试</li>';
+            } finally {
+                loader.classList.add('hidden');
+                skeletonContainer.classList.remove('active');
+                bookList.style.opacity = '1';
+                bookList.style.transition = 'opacity 0.5s ease';
+            }
+        }
+
+        // 绑定书籍事件
+        function bindBookEvents() {
+            document.querySelectorAll('.book-item').forEach(function(item) {
+                item.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openBook(item);
+                    }
+                });
+                item.addEventListener('click', function(e) {
+                    createRipple(e, item);
+                });
             });
+        }
+
+        // 页面加载处理
+        window.addEventListener('load', function() {
+            loadBooksFromJSON();
         });
 
         // 分享功能

@@ -495,67 +495,7 @@
         </div>
         
         <ul class="book-list" id="bookList" role="list" aria-label="書籍列表">
-            <li class="book-item" data-category="linux" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="Ubuntu Linux命令行簡明教程，撳Enter打開">
-                <div class="book-header">
-                    <i class="fab fa-linux book-icon" aria-hidden="true"></i>
-                    <a href="https://zhuojiayanstudio.github.io/books/linux-concise-cmd-zh_CN.pdf" target="_blank" aria-label="閱讀 Ubuntu Linux命令行簡明教程">Ubuntu Linux命令行簡明教程</a>
-                    <span class="pdf-badge"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</span>
-                    <i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>
-                </div>
-                <div class="book-meta">
-                    <span class="badge"><i class="fas fa-user" aria-hidden="true"></i> Magi Su</span>
-                    <span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> 2006</span>
-                    <span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> GNU/GPL</span>
-                    <span class="badge"><i class="fas fa-globe-asia" aria-hidden="true"></i> 僅限簡體中文</span>
-                </div>
-                <div class="book-meta" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <span class="badge" style="background: rgba(255,255,255,0.1);"><i class="fas fa-thumbtack" aria-hidden="true"></i> 繁體中文替代：<a href="https://linux.vbird.org/" target="_blank" style="color: #fff; text-decoration: underline;">鳥哥的 Linux 私房菜</a></span>
-                </div>
-            </li>
-            <li class="book-item" data-category="ai" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="動手學深度學習，撳Enter打開">
-                <div class="book-header">
-                    <i class="fas fa-brain book-icon" aria-hidden="true"></i>
-                    <a href="https://zh.d2l.ai/" target="_blank" aria-label="閱讀 動手學深度學習">動手學深度學習</a>
-                    <i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>
-                </div>
-                <div class="book-meta">
-                    <span class="badge"><i class="fas fa-user" aria-hidden="true"></i> 阿斯顿·張等</span>
-                    <span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> 2023</span>
-                    <span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> MIT-0</span>
-                    <span class="badge"><i class="fas fa-globe-asia" aria-hidden="true"></i> 僅限簡體中文</span>
-                </div>
-                <div class="book-meta" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <span class="badge" style="background: rgba(255,255,255,0.1);"><i class="fas fa-thumbtack" aria-hidden="true"></i> 繁體中文替代：<a href="http://speech.ee.ntu.edu.tw/~tlkagk/courses.html" target="_blank" style="color: #fff; text-decoration: underline;">李宏毅深度學習課程</a></span>
-                </div>
-            </li>
-            <li class="book-item" data-category="cpp" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="C++ 并发编程实战（中文版），撳Enter打開">
-                <div class="book-header">
-                    <i class="fas fa-code book-icon" aria-hidden="true"></i>
-                    <a href="https://github.com/xiaoweiChen/CPP-Concurrency-In-Action-2ed-2019" target="_blank" aria-label="閱讀 C++ 并发编程实战（中文版）">C++ 并发编程实战（中文版）</a>
-                    <i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>
-                </div>
-                <div class="book-meta">
-                    <span class="badge"><i class="fas fa-user" aria-hidden="true"></i> Anthony Williams</span>
-                    <span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> 2019</span>
-                    <span class="badge"><i class="fas fa-building" aria-hidden="true"></i> Manning Publications</span>
-                    <span class="badge"><i class="fas fa-microchip" aria-hidden="true"></i> C++ 多線程權威指南</span>
-                </div>
-            </li>
-            <li class="book-item" data-category="logic" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="數理邏輯（Open Logic Project），撳Enter打開">
-                <div class="book-header">
-                    <i class="fas fa-brain book-icon" aria-hidden="true"></i>
-                    <a href="books/open-logic-complete.pdf" target="_blank" aria-label="閱讀 數理邏輯（Open Logic Project）">數理邏輯（Open Logic Project）</a>
-                    <span class="pdf-badge"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</span>
-                    <i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>
-                </div>
-                <div class="book-meta">
-                    <span class="badge"><i class="fas fa-user" aria-hidden="true"></i> 多作者合著</span>
-                    <span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> 持續更新</span>
-                    <span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> CC BY 4.0</span>
-                    <span class="badge"><i class="fas fa-globe-americas" aria-hidden="true"></i> 英文版</span>
-                    <span class="badge"><i class="fas fa-graduation-cap" aria-hidden="true"></i> 完整教材</span>
-                </div>
-            </li>
+            <!-- 書籍由 JSON 動態加載 -->
         </ul>
 
         <div class="empty-state" id="emptyState">
@@ -571,23 +511,80 @@
         </div>
     </div>
     <script>
-        // 頁面加載處理
-        window.addEventListener('load', function() {
-            const loader = document.getElementById('loader');
-            const skeletonContainer = document.getElementById('skeletonContainer');
+        // 分類圖標映射
+        const categoryIcons = {
+            'Linux': 'fab fa-linux',
+            '人工智能': 'fas fa-brain',
+            '编程语言': 'fas fa-code',
+            '数理逻辑': 'fas fa-brain'
+        };
+
+        // 從 JSON 加載書籍
+        async function loadBooksFromJSON() {
             const bookList = document.getElementById('bookList');
+            const skeletonContainer = document.getElementById('skeletonContainer');
+            const loader = document.getElementById('loader');
             
             skeletonContainer.classList.add('active');
             bookList.style.opacity = '0';
             
-            requestAnimationFrame(function() {
-                setTimeout(function() {
-                    loader.classList.add('hidden');
-                    skeletonContainer.classList.remove('active');
-                    bookList.style.opacity = '1';
-                    bookList.style.transition = 'opacity 0.5s ease';
-                }, 300);
+            try {
+                const response = await fetch('library-data.json');
+                const allBooks = await response.json();
+                
+                const currentPage = 'index-yue.html';
+                const books = allBooks.filter(book => book.pages && book.pages.includes(currentPage));
+                
+                bookList.innerHTML = books.map((book, index) => `
+                    <li class="book-item" data-category="${book.category}" onclick="openBook(this)" role="listitem" tabindex="0" aria-label="${book.title}，撳Enter打開" style="animation-delay: ${(index + 1) * 0.1}s">
+                        <div class="book-header">
+                            <i class="${categoryIcons[book.category] || 'fas fa-book'} book-icon" aria-hidden="true"></i>
+                            <a href="${book.url}" target="_blank" aria-label="閱讀 ${book.title}">${book.title}</a>
+                            ${book.url.endsWith('.pdf') ? '<span class="pdf-badge"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</span>' : ''}
+                            <i class="fas fa-arrow-right book-arrow" aria-hidden="true"></i>
+                        </div>
+                        <div class="book-meta">
+                            ${book.author ? `<span class="badge"><i class="fas fa-user" aria-hidden="true"></i> ${book.author}</span>` : ''}
+                            ${book.year ? `<span class="badge"><i class="fas fa-calendar" aria-hidden="true"></i> ${book.year}</span>` : ''}
+                            ${book.license ? `<span class="badge"><i class="fas fa-balance-scale" aria-hidden="true"></i> ${book.license}</span>` : ''}
+                            ${book.language === '英文' ? '<span class="badge"><i class="fas fa-globe-americas" aria-hidden="true"></i> 英文版</span>' : ''}
+                            ${book.language === '简体中文' ? '<span class="badge"><i class="fas fa-globe-asia" aria-hidden="true"></i> 僅限簡體中文</span>' : ''}
+                            ${book.tags ? book.tags.split(',').map(tag => `<span class="badge"><i class="fas fa-tag" aria-hidden="true"></i> ${tag.trim()}</span>`).join('') : ''}
+                        </div>
+                    </li>
+                `).join('');
+                
+                bindBookEvents();
+                
+            } catch (error) {
+                console.error('加載書籍失敗:', error);
+                bookList.innerHTML = '<li class="book-item" style="text-align:center"><i class="fas fa-exclamation-triangle"></i> 加載書籍失敗，請刷新頁面重試</li>';
+            } finally {
+                loader.classList.add('hidden');
+                skeletonContainer.classList.remove('active');
+                bookList.style.opacity = '1';
+                bookList.style.transition = 'opacity 0.5s ease';
+            }
+        }
+
+        // 綁定書籍事件
+        function bindBookEvents() {
+            document.querySelectorAll('.book-item').forEach(function(item) {
+                item.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openBook(item);
+                    }
+                });
+                item.addEventListener('click', function(e) {
+                    createRipple(e, item);
+                });
             });
+        }
+
+        // 頁面加載處理
+        window.addEventListener('load', function() {
+            loadBooksFromJSON();
         });
 
         // 分享功能
