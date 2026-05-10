@@ -3,18 +3,487 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="卓嘉彥嘅圖書館 - 開源編程書籍合集">
     <title id="pageTitle">卓嘉彥嘅圖書館</title>
     
     <!-- 性能优化：预加载关键资源 -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-..." crossorigin="anonymous">
+    <link rel="preload" as="fetch" href="library-data.json" crossorigin="anonymous">
     
-    <link rel="stylesheet" href="https://zhuojiayanstudio.github.io/styles.min.css" />
+    <!-- 字体优化 -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap" as="style">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
     <style>
-        /* 复用 themes/base.css 的部分样式 */
-        body, .container, .lang-switch, .search-box, .book-item, .empty-state, .footer, .book-header, .book-icon, .book-arrow, .book-meta, .badge, .pdf-badge, .highlight, .share-btn, .mood-icon, .ripple, .skeleton, .loader {
-            @applyThemesBase;
+        /* =============== CSS 变量定义 =============== */
+        :root {
+            --primary-gradient-start: #667eea;
+            --primary-gradient-end: #764ba2;
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-shadow: rgba(0, 0, 0, 0.2);
+            --text-primary: #fff;
+            --text-secondary: rgba(255, 255, 255, 0.9);
+            --text-muted: rgba(255, 255, 255, 0.75);
+            --text-dim: rgba(255, 255, 255, 0.6);
+            --accent-color: #764ba2;
+            --hover-bg: rgba(255, 255, 255, 0.35);
+            --badge-bg: rgba(255, 255, 255, 0.15);
+            --success-color: rgba(76, 175, 80, 0.4);
+            --success-border: rgba(76, 175, 80, 0.5);
+            --highlight-color: #ffcc00;
+            --ripple-color: rgba(255, 255, 255, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, var(--primary-gradient-start) 0%, var(--primary-gradient-end) 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            position: relative;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            padding: 50px 40px;
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            transition: backdrop-filter 0.3s ease;
+            will-change: backdrop-filter;
+        }
+
+        .container:hover {
+            backdrop-filter: blur(22px) saturate(190%);
+        }
+
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            right: max(20px, calc(50% - 350px));
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px) saturate(150%);
+            -webkit-backdrop-filter: blur(10px) saturate(150%);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .lang-switch a {
+            color: var(--accent-color);
+            text-decoration: none;
+            margin: 0 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .lang-switch a:hover {
+            color: var(--primary-gradient-start);
+            text-decoration: underline;
+        }
+
+        .lang-switch strong {
+            color: #333;
+            margin: 0 8px;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            color: var(--text-primary);
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 30px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: var(--text-primary);
+            font-size: 1em;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .search-box input:focus {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            font-size: 1em;
+            pointer-events: none;
+        }
+
+        .book-list {
+            list-style: none;
+            text-align: left;
+        }
+
+        .book-item {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px 25px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: 4px solid rgba(255, 255, 255, 0.5);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 0.5s ease forwards;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            will-change: transform, opacity;
+        }
+
+        .book-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+            pointer-events: none;
+        }
+
+        .book-item:hover::before {
+            left: 100%;
+        }
+
+        .book-item:hover {
+            transform: translateX(5px);
+            background: var(--hover-bg);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+            border-left-color: var(--text-primary);
+        }
+
+        .book-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .book-icon {
+            font-size: 1.3em;
+            color: var(--text-primary);
+            opacity: 0.9;
+            flex-shrink: 0;
+        }
+
+        .book-item a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            flex: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .book-item a:hover {
+            opacity: 0.8;
+        }
+
+        .book-arrow {
+            color: var(--text-dim);
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .book-item:hover .book-arrow {
+            color: var(--text-primary);
+            transform: translateX(3px);
+        }
+
+        .book-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: var(--badge-bg);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 0.8em;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .book-item:hover .badge {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .pdf-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: rgba(255, 100, 100, 0.3);
+            border: 1px solid rgba(255, 100, 100, 0.4);
+            font-size: 0.7em;
+            color: #ffcccc;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+
+        .highlight {
+            color: var(--highlight-color);
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-dim);
+            display: none;
+        }
+
+        .empty-state.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .empty-state i {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.7;
+        }
+
+        .empty-state p {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .empty-state small {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .share-btn {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            animation: breathe 3s ease-in-out infinite;
+        }
+
+        .share-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: none;
+        }
+
+        .share-btn.copied {
+            background: var(--success-color);
+            border-color: var(--success-border);
+            animation: none;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-muted);
+            font-size: 0.85em;
+        }
+
+        .mood-icon {
+            cursor: pointer;
+            display: inline-block;
+            transition: transform 0.3s ease;
+            margin-left: 5px;
+            user-select: none;
+        }
+
+        .mood-icon:hover {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--ripple-color);
+            transform: scale(0);
+            animation: rippleEffect 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 75%);
+            background-size: 200% 100%;
+            animation: skeletonLoading 1.5s ease-in-out infinite;
+            border-radius: 16px;
+            height: 80px;
+            margin-bottom: 15px;
+        }
+
+        .skeleton-container {
+            display: none;
+        }
+
+        .skeleton-container.active {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            .lang-switch {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 20px;
+                display: inline-block;
+            }
+            .book-header {
+                flex-wrap: wrap;
+            }
+            .book-meta {
+                gap: 4px;
+            }
+            .badge {
+                font-size: 0.75em;
+                padding: 3px 8px;
+            }
+        }
+
+        .loader {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, var(--primary-gradient-start) 0%, var(--primary-gradient-end) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loader i {
+            font-size: 3em;
+            color: rgba(255, 255, 255, 0.8);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes rippleEffect {
+            to { transform: scale(4); opacity: 0; }
+        }
+        
+        @keyframes breathe {
+            0%, 100% { box-shadow: 0 0 5px rgba(255,255,255,0.2); }
+            50% { box-shadow: 0 0 20px rgba(255,255,255,0.4), 0 0 40px rgba(255,255,255,0.1); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes skeletonLoading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
     </style>
 </head>
@@ -23,7 +492,7 @@
     <div class="container" id="mainContainer">
         <div class="lang-switch" role="navigation" aria-label="語言切換">
             <a href="index.html" id="linkZh" aria-label="切換到中文">中文</a> | 
-            <a href="index-yue.html" id="linkYue" aria-label="切換到粤语">粵語</a> | 
+            <a href="index-yue.html" id="linkYue" aria-label="切換到粤语"><strong>粵語</strong></a> | 
             <a href="index-en.html" id="linkEn" aria-label="切換到英文">English</a>
         </div>
 
@@ -32,7 +501,7 @@
         
         <div class="search-box">
             <i class="fas fa-search" aria-hidden="true"></i>
-            <input type="text" id="searchInput" placeholder="搜尋書籍..." aria-label="搜尋書籍" oninput="filterBooks()">
+            <input type="text" id="searchInput" placeholder="搜尋書籍標題..." aria-label="搜尋書籍" oninput="filterBooks()">
         </div>
         
         <div class="skeleton-container" id="skeletonContainer">
@@ -56,6 +525,7 @@
         </div>
     </div>
 
+    <!-- 核心脚本 -->
     <script src="js/config.js"></script>
     <script src="js/pinyin-map.js"></script>
     <script src="js/library.js"></script>
