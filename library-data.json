@@ -10,8 +10,7 @@
     "url": "https://zhuojiayanstudio.github.io/books/linux-concise-cmd-zh_CN.pdf",
     "tags": "PDF, 教程, 入门",
     "pages": [
-      "index.html",
-      "index-yue.html"
+      "index.html"
     ],
     "addedAt": "2026-05-07T10:00:00Z"
   },
@@ -26,8 +25,7 @@
     "url": "https://zh.d2l.ai/",
     "tags": "教材, 深度学习, 热门",
     "pages": [
-      "index.html",
-      "index-yue.html"
+      "index.html"
     ],
     "addedAt": "2026-05-07T11:30:00Z"
   },
@@ -153,5 +151,22 @@
       "index.html"
     ],
     "addedAt": "2026-05-10T09:19:58.286Z"
+  },
+  {
+    "title": "开发者边车",
+    "category": "其他",
+    "language": "简体中文",
+    "license": "MPL 2.0",
+    "author": "greper ",
+    "year": "2025",
+    "description": "开发者边车，github打不开，github加速，git clone加速，git release下载加速，stackoverflow加速",
+    "url": "https://gitee.com/shun_dev/dev-sidecar",
+    "tags": "加速, 大陆",
+    "pages": [
+      "index.html",
+      "index-yue.html",
+      "index-en.html"
+    ],
+    "addedAt": "2026-05-11T12:12:14.489Z"
   }
 ]
