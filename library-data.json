@@ -153,11 +153,11 @@
     "addedAt": "2026-05-10T09:19:58.286Z"
   },
   {
-    "title": "开发者边车",
+    "title": "开发者边车(dev-sidecar)",
     "category": "其他",
     "language": "简体中文",
     "license": "MPL 2.0",
-    "author": "greper ",
+    "author": "greper",
     "year": "2025",
     "description": "开发者边车，github打不开，github加速，git clone加速，git release下载加速，stackoverflow加速",
     "url": "https://gitee.com/shun_dev/dev-sidecar",
@@ -168,5 +168,66 @@
       "index-en.html"
     ],
     "addedAt": "2026-05-11T12:12:14.489Z"
+  },
+  {
+    "title": "Pro Git",
+    "category": "其他",
+    "language": "英文",
+    "license": "CC BY-NC-SA 3.0",
+    "author": "Scott Chacon and Ben Straub",
+    "year": "2014",
+    "description": "Git Official Tutorial",
+    "url": "https://zhuojiayanstudio.github.io/books/progit.pdf",
+    "tags": "Git",
+    "pages": [
+      "index-en.html"
+    ],
+    "addedAt": "2026-05-12T11:35:26.396Z"
+  },
+    {
+    "title": "Pro Git",
+    "category": "其他",
+    "language": "繁体中文",
+    "license": "CC BY-NC-SA 3.0",
+    "author": "Scott Chacon和Ben Straub",
+    "year": "2014",
+    "description": "Git官方教程",
+    "url": "https://zhuojiayanstudio.github.io/books/progit_v2.1.0.pdf",
+    "tags": "Git",
+    "pages": [
+      "index-yue.html"
+    ],
+    "addedAt": "2026-05-12T11:40:31.657Z"
+  },
+  {
+    "title": "Hello Claw",
+    "category": "其他",
+    "language": "英文",
+    "license": "CC BY-NC-SA 4.0",
+    "author": "datawhalechina",
+    "year": "2026",
+    "description": "Adopt from scratch and build your first claw",
+    "url": "https://datawhalechina.github.io/hello-claw/en/build/",
+    "tags": "OpenClaw",
+    "pages": [
+      "index-en.html"
+    ],
+    "addedAt": "2026-05-12T11:53:20.805Z"
+  },
+  {
+    "title": "Hello Claw",
+    "category": "其他",
+    "language": "简体中文",
+    "license": "CC BY-NC-SA 4.0",
+    "author": "datawhalechina",
+    "year": "2026",
+    "description": "来领养你的第一只龙虾！",
+    "url": "https://datawhalechina.github.io/hello-claw/cn/build/",
+    "tags": "OpenClaw",
+    "pages": [
+      "index.html",
+      "index-yue.html"
+    ],
+    "addedAt": "2026-05-12T11:56:08.464Z"
   }
 ]
