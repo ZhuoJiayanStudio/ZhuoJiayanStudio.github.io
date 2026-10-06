@@ -66,7 +66,7 @@ const CONFIG = {
             langBadgeIcon: 'fas fa-globe-americas',
             loadError: '加載書籍失敗，請刷新頁面重試',
             currentPage: 'index-yue.html',
-            htmlLang: 'zh-HK'
+            htmlLang: 'yue-Hant-HK'
         },
         en: {
             pageTitle: "Zhuo Jiayan's Library",
@@ -112,7 +112,7 @@ const CONFIG = {
     
     // 数据配置
     DATA: {
-        jsonPath: 'library-data.json',
+        jsonPath: '../library-data.json',
         cacheDuration: 86400000 // 24小时
     },
     
